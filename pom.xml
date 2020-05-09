@@ -15,12 +15,6 @@
             <artifactId>jansi</artifactId>
             <version>1.17.1</version>
         </dependency>
-        <!-- JLine -->
-        <dependency>
-            <groupId>org.jline</groupId>
-            <artifactId>jline</artifactId>
-            <version>3.13.3</version>
-        </dependency>
         <!-- GSON by Google -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
