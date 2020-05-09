@@ -1,0 +1,3 @@
+Manifest-Version: 1.0
+Main-Class: dev.glitchedcode.pbd.PBD
+Class-Path: dev.glitchedcode.pbd.PBD
