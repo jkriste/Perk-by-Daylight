@@ -2,7 +2,9 @@
 An easy-to-use icon installer for the game [Dead by Daylight](https://store.steampowered.com/app/381210/Dead_by_Daylight/).
 Inspired by [the subreddit with the same name](https://www.reddit.com/r/PerkByDaylight/).
 <br /><br />
-##How to Run
+
+## How to Run
+
 **Requirements**
 <br />
 *Perk by Daylight requires that you are on the Windows operating system (no specific version) and that you have Java Runtime Environment [version 1.8](https://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html) or higher.*
@@ -18,15 +20,18 @@ The `.JAR` file is not executable, so it must be ran with `java -jar FILENAME.ja
 There are a list of arguments that is acceptable for Perk by Daylight.
 * `-debug` This will output optional dialog to the console and is often used to "debug" the program. Very verbose.
 * `-nocolor` This will disable coloring on the console and will make it harder to read. Perk by Daylight uses Jansi to output color.
-##About
+## About
 **Notes**
 <br />
-This program is not a hack and is not meant to be used while Dead by Daylight is open or running.
+This program is **not a hack** and is not meant to be used while Dead by Daylight is open or running.
 Improper use of this program could result in a false-positive on EasyAntiCheat's program and could get you falsely banned, just like manually installing icons could.
 However, this is highly unlikely when used properly.
 This program does not read, write, or modify game files, including game logs, in any way other than replacing `.PNG` files.
 <br /><br />
+
 **Software Requirements**
+<br />
+
 * Java [version 1.8](https://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html) or higher.
 
 That's it!
@@ -63,9 +68,15 @@ That's it!
 <br />
 *Dark and Light Mode Toggle*
 <br />
-![Dark and Light Mode Toggler](https://i.imgur.com/VAbAIQY.gifv)
+
+![Dark and Light Mode Toggler](https://i.imgur.com/VAbAIQY.gif)
+
 <br />
+
 *Easy Updater*
+
 <br />
-![The Update](https://i.imgur.com/BgYooBq.gifv)
+
+![Easy Updater](https://i.imgur.com/BgYooBq.gif)
+
 <br />
