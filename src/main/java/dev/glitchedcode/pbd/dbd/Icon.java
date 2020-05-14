@@ -1,6 +1,5 @@
 package dev.glitchedcode.pbd.dbd;
 
-import com.google.common.base.CaseFormat;
 import dev.glitchedcode.pbd.PBD;
 
 import javax.annotation.Nonnull;
@@ -28,6 +27,14 @@ public interface Icon {
     String getFileAdditive();
 
     /**
+     * Gets a properly formatted name of the {@link Icon}.
+     *
+     * @return A properly formatted name of the {@link Icon}.
+     */
+    @Nonnull
+    String getProperName();
+
+    /**
      * Gets whether the {@link #getFileAdditive()} is a prefix.
      *
      * @return True if the {@link #getFileAdditive()} is a prefix, false if a suffix.
@@ -43,7 +50,7 @@ public interface Icon {
      */
     @Nonnull
     default String asFileName() {
-        return isPrefix() ? (getFileAdditive() + getName()) : (getName() + getFileAdditive()) + ".png";
+        return (isPrefix() ? (getFileAdditive() + getName()) : (getName() + getFileAdditive())) + ".png";
     }
 
     /**
@@ -70,23 +77,6 @@ public interface Icon {
                     folder.getAbsolutePath()));
         String sub = getSubfolderName();
         return new File(folder, (sub.isEmpty() ? "" : sub + File.separator) + asFileName());
-    }
-
-    /**
-     *
-     *
-     * @return
-     */
-    @Nonnull
-    default CaseFormat getNamingScheme() {
-        return CaseFormat.LOWER_CAMEL;
-    }
-
-    @Nonnull
-    default String asProperName() {
-        return getNamingScheme()
-                .to(CaseFormat.LOWER_UNDERSCORE, getName())
-                .replace('_', ' ');
     }
 
     /**

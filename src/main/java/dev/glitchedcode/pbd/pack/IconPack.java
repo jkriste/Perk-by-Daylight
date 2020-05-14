@@ -4,16 +4,22 @@ import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import dev.glitchedcode.pbd.PBD;
+import dev.glitchedcode.pbd.dbd.Icon;
 import dev.glitchedcode.pbd.gui.IconPackTreeView;
 import dev.glitchedcode.pbd.logger.Logger;
+import javafx.scene.control.ProgressBar;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -24,13 +30,12 @@ public class IconPack {
     private final int id;
     private final File folder;
     private final PackMeta meta;
-    private static final Logger logger;
     private final IconPackTreeView tree;
     private static final AtomicInteger ID_GEN;
     private static final List<IconPack> packs;
+    private static final Logger logger = PBD.getLogger();
 
     static {
-        logger = PBD.getLogger();
         ID_GEN = new AtomicInteger(0);
         packs = new CopyOnWriteArrayList<>();
     }
@@ -79,9 +84,26 @@ public class IconPack {
         packs.remove(this);
     }
 
-    public void install() throws IOException {
-
+    public void install(@Nonnull ProgressBar progressBar) throws IOException {
+        int current = 0;
+        int max = PBD.getIcons().size() - meta.getMissingIcons().size();
+        progressBar.setVisible(true);
+        for (Icon icon : PBD.getIcons()) {
+            if (meta.isMissingIcon(icon))
+                continue;
+            copy(icon.asFile(folder), icon.asFile(PBD.getIconsDir()));
+            current++;
+            progressBar.setProgress((double) current / (double) max);
+        }
+        progressBar.setVisible(false);
     }
+
+    public void install(@Nonnull Icon icon) throws IOException {
+        if (meta.isMissingIcon(icon))
+            throw new IconPackException("Given icon '" + icon.getName()+ "' is missing from this pack.");
+        copy(icon.asFile(folder), icon.asFile(PBD.getIconsDir()));
+    }
+
 
     public static void saveAll() {
         for (IconPack pack : packs) {
@@ -128,6 +150,18 @@ public class IconPack {
         if (meta != null)
             return new IconPack(directory, meta);
         return null;
+    }
+
+    private void copy(@Nonnull File from, @Nonnull File to) throws IOException {
+        try (InputStream in = new FileInputStream(from);
+             OutputStream out = new FileOutputStream(to)) {
+            int read;
+            byte[] buffer = new byte[1024];
+            while ((read = in.read(buffer)) != -1) {
+                out.write(buffer, 0, read);
+            }
+            out.flush();
+        }
     }
 
     @Nullable

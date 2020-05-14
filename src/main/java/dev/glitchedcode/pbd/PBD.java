@@ -1,8 +1,12 @@
 package dev.glitchedcode.pbd;
 
+import com.google.common.base.CaseFormat;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonWriter;
+import dev.glitchedcode.pbd.dbd.Addon;
+import dev.glitchedcode.pbd.dbd.Perk;
+import dev.glitchedcode.pbd.dbd.Portrait;
 import dev.glitchedcode.pbd.gui.Icon;
 import dev.glitchedcode.pbd.gui.controller.MainController;
 import dev.glitchedcode.pbd.json.Config;
@@ -32,7 +36,11 @@ import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Stream;
 
 public class PBD extends Application {
 
@@ -88,6 +96,10 @@ public class PBD extends Application {
      * The current version of this program.
      */
     public static final String VERSION = "0.0.1-BETA";
+    /**
+     * A convenient way to access all icons.
+     */
+    private static Set<dev.glitchedcode.pbd.dbd.Icon> ICONS;
 
     static {
         APP_DATA_DIR = new File(System.getenv("APPDATA"));
@@ -132,7 +144,10 @@ public class PBD extends Application {
         setupFiles();
         // Let the Logger class handle errors.
         Thread.currentThread().setUncaughtExceptionHandler(getExceptionHandler());
-        // Create the main form
+//        File addons = new File(ICONS_DIR, "ItemAddons");
+//        File[] addonFiles = addons.listFiles();
+//        assert (addons.exists() && addons.isDirectory() && addonFiles != null);
+//        System.out.println(buildAddonsEnum(addonFiles, null));
         launch(args);
     }
 
@@ -365,6 +380,17 @@ public class PBD extends Application {
         }
     }
 
+    public static Set<dev.glitchedcode.pbd.dbd.Icon> getIcons() {
+        if (ICONS != null)
+            return ICONS;
+        Set<dev.glitchedcode.pbd.dbd.Icon> icons = new HashSet<>();
+        Collections.addAll(icons, Addon.VALUES);
+        Collections.addAll(icons, Perk.VALUES);
+        Collections.addAll(icons, Portrait.VALUES);
+        ICONS = icons;
+        return icons;
+    }
+
     /**
      * Checks if the OS is Windows by checking the OS name.
      *
@@ -575,5 +601,51 @@ public class PBD extends Application {
         primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/pic/pbd_icon.png")));
         controller.setMode(CONFIG.isDarkMode());
         primaryStage.show();
+    }
+
+    private static String buildAddonsEnum(@Nonnull File[] files, @Nullable String dirName) {
+        StringBuilder builder = new StringBuilder();
+        for (File file : files) {
+            if (file.isDirectory()) {
+                File[] files1 = file.listFiles();
+                assert (files1 != null);
+                builder.append(buildAddonsEnum(files1, file.getName()));
+                continue;
+            }
+            System.out.println(file.getName());
+            String name = file.getName().replaceFirst("iconAddon_", "").replaceFirst(".png", "");
+            String enumName = CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, name);
+            builder.append(enumName)
+                    .append("(\"")
+                    .append(name)
+                    .append("\", ")
+                    .append("\"")
+                    .append(toTitleCase(enumName.replace('_', ' ')))
+                    .append("\", ")
+                    .append(dirName != null ? ("\"" + dirName + "\"") : "\b")
+                    .append("),\n");
+        }
+        builder.append(";");
+        return builder.toString();
+    }
+
+    private static String toTitleCase(@Nonnull String s) {
+        if (s.isEmpty()) {
+            return "";
+        }
+
+        if (s.length() == 1) {
+            return s.toUpperCase();
+        }
+
+        StringBuilder resultPlaceHolder = new StringBuilder(s.length());
+
+        Stream.of(s.split(" ")).forEach(stringPart -> {
+            char[] charArray = stringPart.toLowerCase().toCharArray();
+            charArray[0] = Character.toUpperCase(charArray[0]);
+            resultPlaceHolder.append(new String(charArray)).append(" ");
+        });
+
+        return resultPlaceHolder.toString().trim();
     }
 }

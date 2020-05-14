@@ -78,6 +78,12 @@ public enum Portrait implements Icon {
         return "_charSelect_portrait";
     }
 
+    @Nonnull
+    @Override
+    public String getProperName() {
+        return character.getName() + "'s Portrait";
+    }
+
     @Override
     public boolean isPrefix() {
         return false;
@@ -111,6 +117,15 @@ public enum Portrait implements Icon {
                 return portrait;
         }
         return defaultVal;
+    }
+
+    @Nullable
+    public static Portrait fromProperName(@Nonnull String properName) {
+        for (Portrait portrait : VALUES) {
+            if (portrait.getProperName().equalsIgnoreCase(properName))
+                return portrait;
+        }
+        return null;
     }
 
     @Nonnull
