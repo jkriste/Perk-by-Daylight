@@ -319,21 +319,24 @@ public class PBD extends Application {
      * @param throwable The given throwable to format.
      * @return The given {@link Throwable} into a formatted string.
      */
-    public static String formatStackTrace(Throwable throwable) {
+    public static String formatStackTrace(@Nonnull Throwable throwable) {
         StringBuilder builder = new StringBuilder();
-        builder.append(throwable.getClass().getName());
-        builder.append(": ");
-        builder.append(throwable.getMessage());
-        builder.append("\n");
-        for (StackTraceElement element : throwable.getStackTrace()) {
-            builder.append("\t");
-            builder.append(element.getClassName());
-            builder.append("#");
-            builder.append(element.getMethodName());
-            builder.append(":");
-            builder.append(element.getLineNumber());
-            builder.append(element.isNativeMethod() ? " (native method)\n" : "\n");
-        }
+        do {
+            builder.append(throwable.getClass().getName());
+            builder.append(": ");
+            builder.append(throwable.getMessage());
+            builder.append("\n");
+            for (StackTraceElement element : throwable.getStackTrace()) {
+                builder.append("\t");
+                builder.append(element.getClassName());
+                builder.append("#");
+                builder.append(element.getMethodName());
+                builder.append(":");
+                builder.append(element.getLineNumber());
+                builder.append(element.isNativeMethod() ? " (native method)\n" : "\n");
+            }
+            builder.append("\n");
+        } while ((throwable = throwable.getCause()) != null);
         return builder.toString();
     }
 

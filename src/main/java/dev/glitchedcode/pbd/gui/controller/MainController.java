@@ -172,10 +172,15 @@ public class MainController implements Initializable {
     @FXML
     public void onPerkTree(MouseEvent event) {
         String iconName = packList.getSelectionModel().getSelectedItem();
-        TreeItem<String> parent = perkTree.getSelectionModel().getSelectedItem().getParent();
+        TreeItem<String> selected = perkTree.getSelectionModel().getSelectedItem();
+        if (selected == null)
+            return;
+        TreeItem<String> parent = selected.getParent();
+        if (parent == null)
+            return;
         String name = perkTree.getSelectionModel().getSelectedItem().getValue();
-        if (!name.equalsIgnoreCase(iconName) && !name.equalsIgnoreCase("Perks")
-            && !name.equalsIgnoreCase("Addons") && !name.equalsIgnoreCase("Portraits")) {
+        if (!name.equalsIgnoreCase("Perks") && !name.equalsIgnoreCase("Addons")
+                && !name.equalsIgnoreCase("Portraits")) {
             IconPack pack = IconPack.fromName(iconName);
             if (pack == null) {
                 logger.warn("Failed to get icon pack from name '{}'", iconName);
