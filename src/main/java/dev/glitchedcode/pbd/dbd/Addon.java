@@ -17,7 +17,7 @@ public enum Addon implements Icon {
     AWARDWINNING_CHILI("awardwinningChili", "Awardwinning Chili", "Cannibal", CANNIBAL),
     CHILI("chili", "Chili", "Cannibal", CANNIBAL),
     KNIFE_SCRATCHES("knifeScratches", "Knife Scratches", "Cannibal", CANNIBAL),
-    THE_BEASTS_MARK("theBeastsMark", "The Beasts Mark", "Cannibal", CANNIBAL),
+    THE_BEASTS_MARK("theBeastsMark", "The Beast's Mark", "Cannibal", CANNIBAL),
     THE_GREASE("theGrease", "The Grease", "Cannibal", CANNIBAL),
     BLONDE_HAIR("blondeHair", "Blonde Hair", "DLC2", SHAPE),
     BOYFRIENDS_MEMO("boyfriendsMemo", "Boyfriend's Memo", "DLC2", SHAPE),

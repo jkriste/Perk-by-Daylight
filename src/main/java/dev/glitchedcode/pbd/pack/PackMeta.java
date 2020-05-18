@@ -37,7 +37,7 @@ public class PackMeta {
         return Collections.unmodifiableSet(missingIcons);
     }
 
-    public void setName(@Nonnull String name) {
+    void setName(@Nonnull String name) {
         this.name = name;
     }
 
