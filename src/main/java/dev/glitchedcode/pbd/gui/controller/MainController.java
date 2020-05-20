@@ -1,8 +1,8 @@
 package dev.glitchedcode.pbd.gui.controller;
 
-import com.google.common.io.Files;
 import dev.glitchedcode.pbd.PBD;
 import dev.glitchedcode.pbd.dbd.Addon;
+import dev.glitchedcode.pbd.dbd.Offering;
 import dev.glitchedcode.pbd.dbd.Perk;
 import dev.glitchedcode.pbd.dbd.Portrait;
 import dev.glitchedcode.pbd.json.LatestRelease;
@@ -32,6 +32,7 @@ import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.ResourceBundle;
 
 public class MainController implements Initializable {
@@ -82,7 +83,7 @@ public class MainController implements Initializable {
         progressBar.setVisible(false);
         deleteIconPack.setVisible(false);
         installIconPack.setVisible(false);
-        constructIconPerks();
+        constructIconPacks();
         packList.setEditable(true);
         packList.setCellFactory(TextFieldListCell.forListView());
     }
@@ -167,7 +168,15 @@ public class MainController implements Initializable {
         if (old != null && !old.equalsIgnoreCase("Currently Installed")
                 && !old.equalsIgnoreCase("+ Add New Icon Pack")) {
             String newName = event.getNewValue();
-            if (newName != null && !newName.isEmpty()) {
+            if (newName.equalsIgnoreCase("+ Add New Icon Pack")) {
+                setStatus("Not acceptable new name.", false);
+                return;
+            }
+            if (!newName.isEmpty()) {
+                if (IconPack.hasName(newName)) {
+                    setStatus("An icon pack with that name already exists.", false);
+                    return;
+                }
                 String item = packList.getSelectionModel().getSelectedItem();
                 if (item != null && !item.isEmpty()) {
                     IconPack pack = IconPack.fromName(item);
@@ -175,7 +184,7 @@ public class MainController implements Initializable {
                         logger.debug("Set new name for Icon Pack to '{}'", newName);
                         pack.setName(newName);
                         perkTree.setRoot(null);
-                        constructIconPerks();
+                        constructIconPacks();
                         event.consume();
                     }
                 }
@@ -194,7 +203,7 @@ public class MainController implements Initializable {
     public void onRefreshIconPacks(ActionEvent event) {
         logger.debug("Refreshing icon packs...");
         perkTree.setRoot(null);
-        constructIconPerks();
+        constructIconPacks();
         setStatus("Refreshed icon packs list.", false);
     }
 
@@ -218,13 +227,28 @@ public class MainController implements Initializable {
     }
 
     /**
+     * Called when the "Delete Icon Pack" menu item is clicked.
      *
-     *
-     * @param event
+     * @param event The action event.
      */
     @FXML
     public void onDeleteIconPack(ActionEvent event) {
-
+        String name = packList.getSelectionModel().getSelectedItem();
+        if (name != null && !name.equalsIgnoreCase("+ Add New Icon Pack")
+            && !name.equalsIgnoreCase("Currently Installed")) {
+            IconPack pack = IconPack.fromName(name);
+            if (pack == null) {
+                logger.warn("Failed to get icon pack from name with name '{}'", name);
+                return;
+            }
+            iconDisplay.setImage(null);
+            perkTree.setRoot(null);
+            File folder = pack.getFolder();
+            pack.dispose();
+            deleteFolder(folder);
+            setStatus("Deleted icon pack '" + name + "'.", false);
+            constructIconPacks();
+        }
     }
 
     @FXML
@@ -248,7 +272,7 @@ public class MainController implements Initializable {
             return;
         String name = perkTree.getSelectionModel().getSelectedItem().getValue();
         if (!name.equalsIgnoreCase("Perks") && !name.equalsIgnoreCase("Addons")
-                && !name.equalsIgnoreCase("Portraits")) {
+                && !name.equalsIgnoreCase("Portraits") && !name.equalsIgnoreCase("Offerings")) {
             IconPack pack = IconPack.fromName(iconName);
             if (pack == null) {
                 logger.warn("Failed to get icon pack from name '{}'", iconName);
@@ -270,6 +294,11 @@ public class MainController implements Initializable {
                     Addon addon = Addon.fromProperName(name);
                     if (addon != null)
                         iconDisplay.setImage(FileUtil.toImage(addon.asFile(pack.getFolder())));
+                    break;
+                case "Offerings":
+                    Offering offering = Offering.fromProperName(name);
+                    if (offering != null)
+                        iconDisplay.setImage(FileUtil.toImage(offering.asFile(pack.getFolder())));
                     break;
                 default:
                     logger.warn("Couldn't find icon with name '{}' and parent '{}'", name, parent.getValue());
@@ -327,7 +356,7 @@ public class MainController implements Initializable {
         this.status.setVisible(true);
     }
 
-    private void constructIconPerks() {
+    private void constructIconPacks() {
         packList.getItems().clear();
         IconPack installed = IconPack.fromName("Currently Installed");
         if (installed == null) {
@@ -373,7 +402,7 @@ public class MainController implements Initializable {
     private void processFile(@Nonnull File file) throws IOException {
         File newDir;
         if (file.isDirectory()) {
-            Files.copy(file, PBD.getPacksDir());
+            com.google.common.io.Files.copy(file, PBD.getPacksDir());
             newDir = new File(PBD.getPacksDir(), file.getName());
         } else if (file.getName().endsWith(".zip")) {
             newDir = FileUtil.unzipFile(file, PBD.getPacksDir());
@@ -383,14 +412,34 @@ public class MainController implements Initializable {
         }
         if (newDir != null && newDir.exists() && newDir.isDirectory()) {
             IconPack pack = IconPack.of(newDir);
-            if (pack != null)
-                logger.info("Added new icon pack '{}'.", pack.getMeta().getName());
+            if (pack != null) {
+                setStatus("Added new icon pack '" + pack.getMeta().getName() + "'.", false);
+                constructIconPacks();
+            }
         } else {
             if (newDir == null) {
                 logger.error("newDir is null.");
                 return;
             }
             logger.warn("newDir ({}) didn't exist or wasn't a directory.", newDir.toString());
+        }
+    }
+
+    private void deleteFolder(@Nonnull File file) {
+        assert (file.exists() && file.isDirectory());
+        File[] files = file.listFiles();
+        if (files != null) {
+            for (File f : files) {
+                if (f.isDirectory())
+                    deleteFolder(f);
+                try {
+                    Files.delete(f.toPath());
+                } catch (IOException e) {
+                    logger.warn("Failed to delete file '{}': {}, will delete on exit instead.",
+                            file.getName(), e.getMessage());
+                    file.deleteOnExit();
+                }
+            }
         }
     }
 }

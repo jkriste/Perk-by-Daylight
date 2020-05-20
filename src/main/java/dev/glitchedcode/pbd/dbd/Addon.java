@@ -228,7 +228,6 @@ public enum Addon implements Icon {
     HIGH_END_SAPPHIRE_LENS("highEndSapphireLens", "High End Sapphire Lens"),
     HOMEMADE_MUFFLER("homemadeMuffler", "Homemade Muffler", CANNIBAL),
     HONING_STONE("honingStone", "Honing Stone", TRAPPER),
-    INHALER("inhaler", "Inhaler", NURSE),
     INSTRUCTIONS("instructions", "Instructions"),
     INTENSE_HALOGEN("intenseHalogen", "Intense Halogen"),
     JENNERS_LAST_BREATH("jennersLastBreath", "Jenners Last Breath", NURSE),

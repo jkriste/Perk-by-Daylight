@@ -2,6 +2,7 @@ package dev.glitchedcode.pbd.gui;
 
 import dev.glitchedcode.pbd.PBD;
 import dev.glitchedcode.pbd.dbd.Addon;
+import dev.glitchedcode.pbd.dbd.Offering;
 import dev.glitchedcode.pbd.dbd.Perk;
 import dev.glitchedcode.pbd.dbd.Portrait;
 import dev.glitchedcode.pbd.logger.Logger;
@@ -44,7 +45,13 @@ public class IconPackTreeView extends TreeItem<String> {
                 continue;
             portraits.getChildren().add(new TreeItem<>(portrait.getProperName()));
         }
-        getChildren().addAll(perks, addons, portraits);
+        TreeItem<String> offerings = new TreeItem<>("Offerings");
+        for (Offering offering : Offering.VALUES) {
+            if (meta.isMissingIcon(offering))
+                continue;
+            offerings.getChildren().add(new TreeItem<>(offering.getProperName()));
+        }
+        getChildren().addAll(perks, addons, portraits, offerings);
     }
 
     @Nonnull

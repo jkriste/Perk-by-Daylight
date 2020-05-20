@@ -67,8 +67,8 @@ public final class FileUtil {
 
     @Nullable
     public static Image toImage(@Nonnull File file) {
-        try {
-            return new Image(new FileInputStream(file));
+        try (FileInputStream in = new FileInputStream(file)) {
+            return new Image(in);
         } catch (IOException e) {
             logger.warn("Failed to get JavaFX Image from file '{}': {}", file.getAbsolutePath(), e.getMessage());
             logger.handleError(Thread.currentThread(), e);

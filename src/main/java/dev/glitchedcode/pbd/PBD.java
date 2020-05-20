@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonWriter;
 import dev.glitchedcode.pbd.dbd.Addon;
+import dev.glitchedcode.pbd.dbd.Offering;
 import dev.glitchedcode.pbd.dbd.Perk;
 import dev.glitchedcode.pbd.dbd.Portrait;
 import dev.glitchedcode.pbd.gui.Icon;
@@ -77,6 +78,10 @@ public class PBD extends Application {
      */
     public static final File PBD_DIR;
     /**
+     * Temporary folder for holding packs that need verification.
+     */
+    public static final File TEMP_DIR;
+    /**
      * The location all cached icon packs are stored.
      */
     public static final File PACKS_DIR;
@@ -107,6 +112,7 @@ public class PBD extends Application {
         DBD_DIR = new File(PROGRAM_FILES_86_DIR, "Steam\\steamapps\\common\\Dead by Daylight");
         PBD_DIR = new File(APP_DATA_DIR, "Perk by Daylight");
         PACKS_DIR = new File(PBD_DIR, "packs");
+        TEMP_DIR = new File(PBD_DIR, "temp");
         CONFIG_FILE = new File(PBD_DIR, "config.json");
     }
 
@@ -144,10 +150,10 @@ public class PBD extends Application {
         setupFiles();
         // Let the Logger class handle errors.
         Thread.currentThread().setUncaughtExceptionHandler(getExceptionHandler());
-//        File addons = new File(ICONS_DIR, "ItemAddons");
+//        File addons = new File(ICONS_DIR, "Favors");
 //        File[] addonFiles = addons.listFiles();
 //        assert (addons.exists() && addons.isDirectory() && addonFiles != null);
-//        System.out.println(buildAddonsEnum(addonFiles, null));
+//        System.out.println(buildOfferingsEnum(addonFiles, null));
         launch(args);
     }
 
@@ -390,6 +396,7 @@ public class PBD extends Application {
         Collections.addAll(icons, Addon.VALUES);
         Collections.addAll(icons, Perk.VALUES);
         Collections.addAll(icons, Portrait.VALUES);
+        Collections.addAll(icons, Offering.VALUES);
         ICONS = icons;
         return icons;
     }
@@ -458,6 +465,10 @@ public class PBD extends Application {
                 if (IconPack.of(file) == null)
                     logger.warn("File/directory '{}' could not be determined as an icon pack, ignoring.", file.getName());
             }
+        }
+        if (!TEMP_DIR.exists()) {
+            if (TEMP_DIR.mkdir())
+                logger.debug("Created 'temp' folder in 'Perk by Daylight' folder.");
         }
         // Checks if the default DBD folder exists, if not let the user get the folder.
         DBD_DIR = getDBDFolder();
@@ -606,17 +617,17 @@ public class PBD extends Application {
         primaryStage.show();
     }
 
-    private static String buildAddonsEnum(@Nonnull File[] files, @Nullable String dirName) {
+    private static String buildOfferingsEnum(@Nonnull File[] files, @Nullable String dirName) {
         StringBuilder builder = new StringBuilder();
         for (File file : files) {
             if (file.isDirectory()) {
                 File[] files1 = file.listFiles();
                 assert (files1 != null);
-                builder.append(buildAddonsEnum(files1, file.getName()));
+                builder.append(buildOfferingsEnum(files1, file.getName()));
                 continue;
             }
             System.out.println(file.getName());
-            String name = file.getName().replaceFirst("iconAddon_", "").replaceFirst(".png", "");
+            String name = file.getName().replaceFirst("iconFavors_", "").replaceFirst(".png", "");
             String enumName = CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, name);
             builder.append(enumName)
                     .append("(\"")
@@ -624,7 +635,7 @@ public class PBD extends Application {
                     .append("\", ")
                     .append("\"")
                     .append(toTitleCase(enumName.replace('_', ' ')))
-                    .append("\", ")
+                    .append(dirName != null ? "\", " : "\"")
                     .append(dirName != null ? ("\"" + dirName + "\"") : "\b")
                     .append("),\n");
         }

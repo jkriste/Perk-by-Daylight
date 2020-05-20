@@ -151,6 +151,14 @@ public class IconPack {
         return null;
     }
 
+    public static boolean hasName(@Nonnull String name) {
+        for (IconPack pack : packs) {
+            if (pack.getMeta().getName().equalsIgnoreCase(name))
+                return true;
+        }
+        return false;
+    }
+
     @Nullable
     public static IconPack of(@Nonnull File directory) {
         if (!directory.isDirectory()) {
