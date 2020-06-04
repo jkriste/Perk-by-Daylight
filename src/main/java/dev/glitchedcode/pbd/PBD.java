@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonWriter;
 import dev.glitchedcode.pbd.dbd.Addon;
+import dev.glitchedcode.pbd.dbd.Item;
 import dev.glitchedcode.pbd.dbd.Offering;
 import dev.glitchedcode.pbd.dbd.Perk;
 import dev.glitchedcode.pbd.dbd.Portrait;
@@ -21,6 +22,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import org.fusesource.jansi.AnsiConsole;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -41,6 +43,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 public class PBD extends Application {
@@ -58,7 +63,7 @@ public class PBD extends Application {
      */
     private static boolean DEBUG;
     /**
-     * Handles the logging of info into a text file located in the PerkByDaylight folder.
+     * Handles the logging of info into a text file located in the 'Perk by Daylight' folder.
      */
     private static Logger logger;
     /**
@@ -100,11 +105,15 @@ public class PBD extends Application {
     /**
      * The current version of this program.
      */
-    public static final String VERSION = "0.0.1-BETA";
+    public static final String VERSION = "v0.0.1-BETA";
     /**
      * A convenient way to access all icons.
      */
     private static Set<dev.glitchedcode.pbd.dbd.Icon> ICONS;
+    /**
+     * Used to schedule async tasks.
+     */
+    private static final ScheduledExecutorService SERVICE = Executors.newScheduledThreadPool(2);
 
     static {
         APP_DATA_DIR = new File(System.getenv("APPDATA"));
@@ -129,11 +138,17 @@ public class PBD extends Application {
             else
                 popup("Failed to create folder:\n{}", Icon.ERROR, PBD_DIR.getAbsolutePath());
         }
+        // Install Jansi
+        AnsiConsole.systemInstall();
         // get runtime args
         DEBUG = hasArg("-debug", args);
         NO_COLOR = hasArg("-nocolor", args);
         // Create out logger for info & error reporting
         logger = new Logger(PBD_DIR);
+        if (DEBUG)
+            logger.debug("Debug mode has been enabled. Expect excessive spam.");
+        // Letting the logger handle errors.
+        Thread.setDefaultUncaughtExceptionHandler(getExceptionHandler());
         // Builds our Gson object used to read & write to/from JSON files.
         GSON = new GsonBuilder()
                 .setPrettyPrinting()
@@ -142,15 +157,14 @@ public class PBD extends Application {
         // Load config file
         CONFIG = loadConfig();
         if (CONFIG == null) {
-            logger.error("config.json was not saved properly last run and is empty/corrupt.");
-            logger.error("Delete '{}' and restart.", CONFIG_FILE.getAbsolutePath());
+            logger.error("'config.json' was not saved properly last run and is empty/corrupt.");
+            logger.error("The file will be deleted on exit and regenerated on restart.");
+            CONFIG_FILE.deleteOnExit();
             System.exit(0);
         }
         // Set up all additional files & folders.
         setupFiles();
-        // Let the Logger class handle errors.
-        Thread.currentThread().setUncaughtExceptionHandler(getExceptionHandler());
-//        File addons = new File(ICONS_DIR, "Favors");
+//        File addons = new File(ICONS_DIR, "Items");
 //        File[] addonFiles = addons.listFiles();
 //        assert (addons.exists() && addons.isDirectory() && addonFiles != null);
 //        System.out.println(buildOfferingsEnum(addonFiles, null));
@@ -163,10 +177,22 @@ public class PBD extends Application {
      * @param code The exit code.
      */
     public static void close(int code) {
+        logger.debug("Closing application with code {}", code);
         Platform.exit();
+        logger.debug("Closed application with Platform#exit");
         IconPack.saveAll();
+        logger.debug("Saved all icon packs.");
         saveConfig();
+        logger.debug("Saved config...closing logger.");
         logger.close();
+        SERVICE.shutdown();
+        try {
+            if (!SERVICE.awaitTermination(500, TimeUnit.MILLISECONDS))
+                SERVICE.shutdownNow();
+        } catch (InterruptedException e) {
+            SERVICE.shutdownNow();
+        }
+        AnsiConsole.systemUninstall();
         System.exit(code);
     }
 
@@ -204,6 +230,18 @@ public class PBD extends Application {
      */
     public static File getDbdDir() {
         return DBD_DIR;
+    }
+
+    /**
+     * Gets the "temp" folder in the Perk by Daylight folder.
+     * <br />
+     * Used as a temporary place to identify what we are
+     * adding to the software is a valid icon pack.
+     *
+     * @return The "temp" folder in the Perk by Daylight folder.
+     */
+    public static File getTempDir() {
+        return TEMP_DIR;
     }
 
     /**
@@ -259,6 +297,15 @@ public class PBD extends Application {
     }
 
     /**
+     * Gets the {@link ScheduledExecutorService} used to schedule async tasks.
+     *
+     * @return The {@link ScheduledExecutorService}.
+     */
+    public static ScheduledExecutorService getService() {
+        return SERVICE;
+    }
+
+    /**
      * Gets the default {@link java.lang.Thread.UncaughtExceptionHandler}.
      *
      * @return The default {@link java.lang.Thread.UncaughtExceptionHandler}.
@@ -275,6 +322,7 @@ public class PBD extends Application {
      */
     @SuppressWarnings("MagicConstant")
     public static void popup(@Nonnull String message, @Nonnull Icon icon) {
+        // TODO: Unimplement Swing's JOptionPane
         JOptionPane.showMessageDialog(null, message, "Perk by Daylight", icon.getId());
     }
 
@@ -397,8 +445,21 @@ public class PBD extends Application {
         Collections.addAll(icons, Perk.VALUES);
         Collections.addAll(icons, Portrait.VALUES);
         Collections.addAll(icons, Offering.VALUES);
+        Collections.addAll(icons, dev.glitchedcode.pbd.dbd.Action.VALUES);
+        Collections.addAll(icons, Item.VALUES);
         ICONS = icons;
         return icons;
+    }
+
+    @Nullable
+    public static dev.glitchedcode.pbd.dbd.Icon getIcon(@Nonnull String properName) {
+        logger.debug("Getting icon with proper name '{}'", properName);
+        for (dev.glitchedcode.pbd.dbd.Icon icon : getIcons()) {
+            if (icon.getProperName().equalsIgnoreCase(properName))
+                return icon;
+        }
+        logger.warn("Could not find icon with proper name '{}', might not be registered?", properName);
+        return null;
     }
 
     /**
@@ -451,7 +512,7 @@ public class PBD extends Application {
         logger.debug("%appdata% directory path: {}", APP_DATA_DIR.getAbsolutePath());
         if (!APP_DATA_DIR.exists()) {
             popup("Missing app data directory:\n{}", Icon.ERROR, APP_DATA_DIR.getAbsolutePath());
-            System.exit(0);
+            close(0);
         }
         logger.debug("Icon pack cache directory path: {}", PACKS_DIR.getAbsolutePath());
         if (!PACKS_DIR.exists()) {
@@ -462,8 +523,11 @@ public class PBD extends Application {
             assert (PACKS_DIR.isDirectory() && files != null);
             logger.debug("{} files/directories found in '{}'", files.length, PACKS_DIR.getAbsolutePath());
             for (File file : files) {
-                if (IconPack.of(file) == null)
-                    logger.warn("File/directory '{}' could not be determined as an icon pack, ignoring.", file.getName());
+                if (IconPack.of(file) == null) {
+                    logger.warn("File/directory '{}' could not be determined" +
+                            " as an icon pack, deleting on exit.", file.getName());
+                    file.deleteOnExit();
+                }
             }
         }
         if (!TEMP_DIR.exists()) {
@@ -495,7 +559,7 @@ public class PBD extends Application {
                 "Could not locate the default Dead by Daylight folder.\n"
                 + "Locate the folder manually?", "Perk by Daylight", JOptionPane.YES_NO_OPTION);
         if (result == JOptionPane.NO_OPTION)
-            System.exit(0);
+            close(0);
         File folder;
         JFileChooser fileChooser = new JFileChooser(PROGRAM_FILES_86_DIR);
         Action detailsView = fileChooser.getActionMap().get("viewTypeDetails");
@@ -604,12 +668,11 @@ public class PBD extends Application {
      */
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Thread.setDefaultUncaughtExceptionHandler(getExceptionHandler());
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/form/MainForm.fxml"));
         Parent parent = loader.load();
         MainController controller = loader.getController();
         controller.setStage(primaryStage);
-        primaryStage.setTitle("Perk by Daylight v" + PBD.VERSION);
+        primaryStage.setTitle("Perk by Daylight " + PBD.VERSION);
         primaryStage.setOnHidden(event -> close(0));
         primaryStage.setScene(new Scene(parent));
         primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/pic/pbd_icon.png")));
@@ -627,7 +690,7 @@ public class PBD extends Application {
                 continue;
             }
             System.out.println(file.getName());
-            String name = file.getName().replaceFirst("iconFavors_", "").replaceFirst(".png", "");
+            String name = file.getName().replaceFirst("iconItems_", "").replaceFirst(".png", "");
             String enumName = CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, name);
             builder.append(enumName)
                     .append("(\"")
@@ -659,6 +722,7 @@ public class PBD extends Application {
             charArray[0] = Character.toUpperCase(charArray[0]);
             resultPlaceHolder.append(new String(charArray)).append(" ");
         });
+
 
         return resultPlaceHolder.toString().trim();
     }

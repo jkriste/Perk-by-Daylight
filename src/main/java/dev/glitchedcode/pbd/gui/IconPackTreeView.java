@@ -1,7 +1,9 @@
 package dev.glitchedcode.pbd.gui;
 
 import dev.glitchedcode.pbd.PBD;
+import dev.glitchedcode.pbd.dbd.Action;
 import dev.glitchedcode.pbd.dbd.Addon;
+import dev.glitchedcode.pbd.dbd.Item;
 import dev.glitchedcode.pbd.dbd.Offering;
 import dev.glitchedcode.pbd.dbd.Perk;
 import dev.glitchedcode.pbd.dbd.Portrait;
@@ -16,11 +18,6 @@ public class IconPackTreeView extends TreeItem<String> {
 
     private transient IconPack iconPack;
     private static final transient Logger logger = PBD.getLogger();
-
-    public IconPackTreeView() {
-        super("TESTING AAAAAAAA");
-        logger.debug("TESTING TESTING TESTING TESTING");
-    }
 
     @SuppressWarnings("unchecked")
     public IconPackTreeView(@Nonnull IconPack iconPack) {
@@ -51,7 +48,19 @@ public class IconPackTreeView extends TreeItem<String> {
                 continue;
             offerings.getChildren().add(new TreeItem<>(offering.getProperName()));
         }
-        getChildren().addAll(perks, addons, portraits, offerings);
+        TreeItem<String> actions = new TreeItem<>("Actions");
+        for (Action action : Action.VALUES) {
+            if (meta.isMissingIcon(action))
+                continue;
+            actions.getChildren().add(new TreeItem<>(action.getProperName()));
+        }
+        TreeItem<String> items = new TreeItem<>("Items");
+        for (Item item : Item.VALUES) {
+            if (meta.isMissingIcon(item))
+                continue;
+            items.getChildren().add(new TreeItem<>(item.getProperName()));
+        }
+        getChildren().addAll(perks, addons, portraits, offerings, actions, items);
     }
 
     @Nonnull

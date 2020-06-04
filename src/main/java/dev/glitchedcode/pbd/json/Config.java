@@ -4,10 +4,15 @@ public class Config {
 
     private String dbdFolder;
     private boolean darkMode;
+    private boolean offlineMode;
     private boolean ignoreUpdates;
 
     public boolean isDarkMode() {
         return darkMode;
+    }
+
+    public boolean isOfflineMode() {
+        return offlineMode;
     }
 
     public boolean doesIgnoreUpdates() {
@@ -16,6 +21,10 @@ public class Config {
 
     public String getDbdFolder() {
         return dbdFolder;
+    }
+
+    public void setOfflineMode(boolean offlineMode) {
+        this.offlineMode = offlineMode;
     }
 
     public void setDbdFolder(String dbdFolder) {

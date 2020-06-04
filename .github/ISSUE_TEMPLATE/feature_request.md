@@ -1,7 +1,7 @@
 ---
 name: Feature request
-about: Suggest an idea for this project
-title: "[FEATURE]"
+about: Suggest a new feature to help us improve the project.
+title: "[FEATURE] "
 labels: enhancement
 assignees: glitchedcoder
 

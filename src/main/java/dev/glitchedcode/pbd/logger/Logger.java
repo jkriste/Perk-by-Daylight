@@ -79,7 +79,7 @@ public class Logger {
         if (isOpen()) {
             if (type == LogType.DEBUG && !PBD.debug())
                 return;
-            this.writer.println(time() + type.getPrefix() + message);
+            this.writer.println(time() + thread() + type.getPrefix() + message);
             save();
         }
     }
@@ -102,9 +102,9 @@ public class Logger {
             else if (type == LogType.WARN)
                 warnCount.incrementAndGet();
             if (PBD.noColor()) {
-                System.out.println(time() + type.getPrefix() + message);
+                System.out.println(time() + thread() + type.getPrefix() + message);
             } else {
-                System.out.print(Ansi.ansi().fgBrightBlack().a(time()));
+                System.out.print(Ansi.ansi().fgBrightBlack().a(time() + thread()));
                 System.out.println(type.getColor().fg(color).a(message).reset());
             }
         }
@@ -126,24 +126,6 @@ public class Logger {
 
     public void info(Ansi.Color color, String message, Object... param) {
         info(color, PBD.format(message, param));
-    }
-
-    public void command(String message) {
-        file(LogType.COMMAND, message);
-        console(LogType.COMMAND, message);
-    }
-
-    public void command(String message, Object... param) {
-        command(PBD.format(message, param));
-    }
-
-    public void command(Ansi.Color color, String message) {
-        file(LogType.COMMAND, message);
-        console(LogType.COMMAND, color, message);
-    }
-
-    public void command(Ansi.Color color, String message, Object... param) {
-        command(color, PBD.format(message, param));
     }
 
     public void debug(String message) {
@@ -204,24 +186,6 @@ public class Logger {
         error(color, PBD.format(message, param));
     }
 
-    public void fatal(String message) {
-        file(LogType.FATAL, message);
-        console(LogType.FATAL, message);
-    }
-
-    public void fatal(String message, Object... param) {
-        fatal(PBD.format(message, param));
-    }
-
-    public void fatal(Ansi.Color color, String message) {
-        file(LogType.FATAL, message);
-        console(LogType.FATAL, color, message);
-    }
-
-    public void fatal(Ansi.Color color, String message, Object... param) {
-        fatal(color, PBD.format(message, param));
-    }
-
     public void save() {
         if (isOpen())
             this.writer.flush();
@@ -264,5 +228,9 @@ public class Logger {
 
     private String time() {
         return "[" + FORMAT.format(new Date()) + "] ";
+    }
+
+    private String thread() {
+        return "[" + Thread.currentThread().getName() + "] ";
     }
 }

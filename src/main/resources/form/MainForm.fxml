@@ -6,99 +6,87 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="400.0" minWidth="600.0" prefHeight="559.0"
-            prefWidth="700.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="dev.glitchedcode.pbd.gui.controller.MainController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="400.0" minWidth="600.0" prefHeight="559.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dev.glitchedcode.pbd.gui.controller.MainController">
     <top>
-        <MenuBar BorderPane.alignment="CENTER">
+        <MenuBar fx:id="menuBar" BorderPane.alignment="CENTER">
             <Menu mnemonicParsing="false" text="File">
-                <MenuItem mnemonicParsing="false" onAction="#onCheckUpdate" text="Check For Update"/>
-                <MenuItem mnemonicParsing="false" onAction="#onOpenPBD" text="Open PBD Folder"/>
-                <MenuItem mnemonicParsing="false" onAction="#onDonate" text="Donate..."/>
+                <MenuItem mnemonicParsing="false" onAction="#onCheckUpdate" text="Check For Update" />
+            <MenuItem mnemonicParsing="false" onAction="#onDeleteTempContents" text="Delete Temp Contents" />
+                <MenuItem mnemonicParsing="false" onAction="#onOpenPBD" text="Open PBD Folder" />
+                <MenuItem mnemonicParsing="false" onAction="#onDonate" text="Donate..." />
             </Menu>
             <Menu mnemonicParsing="false" text="Pack">
-                <MenuItem mnemonicParsing="false" onAction="#onNewIconPack" text="New Icon Pack..."/>
-                <MenuItem mnemonicParsing="false" onAction="#onRefreshIconPacks" text="Refresh Icon Packs"/>
-                <MenuItem fx:id="installIconPack" mnemonicParsing="false" onAction="#onInstallIconPack"
-                          text="Install Icon Pack"/>
-                <MenuItem fx:id="deleteIconPack" mnemonicParsing="false" onAction="#onDeleteIconPack"
-                          text="Delete Icon Pack"/>
+                <MenuItem mnemonicParsing="false" onAction="#onNewIconPack" text="New Icon Pack..." />
+                <MenuItem mnemonicParsing="false" onAction="#onRefreshIconPacks" text="Refresh Icon Packs" />
+                <MenuItem fx:id="installIconPack" mnemonicParsing="false" onAction="#onInstallIconPack" text="Install Icon Pack" />
+                <MenuItem fx:id="deleteIconPack" mnemonicParsing="false" onAction="#onDeleteIconPack" text="Delete Icon Pack" />
             </Menu>
             <Menu fx:id="iconMenu" mnemonicParsing="false" text="Icon">
-                <MenuItem mnemonicParsing="false" onAction="#onInstallIcon" text="Install Individual Icon"/>
-                <MenuItem mnemonicParsing="false" onAction="#onUpdateIcon" text="Update Icon..."/>
+                <MenuItem mnemonicParsing="false" onAction="#onInstallIcon" text="Install Individual Icon" />
+                <MenuItem mnemonicParsing="false" onAction="#onUpdateIcon" text="Update Icon..." />
             </Menu>
             <Menu mnemonicParsing="false" text="Theme">
-                <CheckMenuItem fx:id="darkMode" mnemonicParsing="false" onAction="#onDarkMode" text="Dark"/>
-                <CheckMenuItem fx:id="lightMode" mnemonicParsing="false" onAction="#onLightMode" text="Light"/>
+                <CheckMenuItem fx:id="darkMode" mnemonicParsing="false" onAction="#onDarkMode" text="Dark" />
+                <CheckMenuItem fx:id="lightMode" mnemonicParsing="false" onAction="#onLightMode" text="Light" />
             </Menu>
         </MenuBar>
     </top>
     <bottom>
         <GridPane prefHeight="30.0" prefWidth="611.0" style="-fx-background-color: derive(-fx-base, 15%);">
             <columnConstraints>
-                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="500.0" minWidth="10.0"
-                                   prefWidth="473.0"/>
-                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="500.0" minWidth="0.0"
-                                   prefWidth="0.0"/>
-                <ColumnConstraints hgrow="SOMETIMES" maxWidth="295.0" minWidth="0.0" prefWidth="295.0"/>
+                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="500.0" minWidth="10.0" prefWidth="473.0" />
+                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="500.0" minWidth="0.0" prefWidth="0.0" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="295.0" minWidth="0.0" prefWidth="295.0" />
             </columnConstraints>
             <rowConstraints>
-                <RowConstraints/>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                <RowConstraints />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
             </rowConstraints>
-            <ProgressBar fx:id="progressBar" prefHeight="15.0" prefWidth="161.0" progress="1.0" GridPane.columnIndex="2"
-                         GridPane.halignment="RIGHT" GridPane.rowIndex="1">
+            <ProgressBar fx:id="progressBar" prefHeight="15.0" prefWidth="161.0" progress="1.0" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
                 <cursor>
-                    <Cursor fx:constant="WAIT"/>
+                    <Cursor fx:constant="WAIT" />
                 </cursor>
                 <padding>
-                    <Insets right="5.0"/>
+                    <Insets right="5.0" />
                 </padding>
             </ProgressBar>
-            <Label fx:id="status" prefHeight="17.0" prefWidth="400.0" text="Checking for update..."
-                   GridPane.halignment="LEFT" GridPane.rowIndex="1">
+            <Label fx:id="status" prefHeight="17.0" prefWidth="400.0" text="Checking for update..." GridPane.halignment="LEFT" GridPane.rowIndex="1">
                 <padding>
-                    <Insets left="5.0"/>
+                    <Insets left="5.0" />
                 </padding>
             </Label>
             <opaqueInsets>
-                <Insets/>
+                <Insets />
             </opaqueInsets>
         </GridPane>
     </bottom>
     <left>
-        <VBox alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
-              minHeight="-Infinity" minWidth="-Infinity" prefHeight="498.0" prefWidth="250.0"
-              BorderPane.alignment="CENTER">
+        <VBox alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="498.0" prefWidth="250.0" BorderPane.alignment="CENTER">
             <padding>
-                <Insets left="5.0" top="5.0"/>
+                <Insets left="5.0" top="5.0" />
             </padding>
-            <ListView fx:id="packList" minHeight="-Infinity" minWidth="-Infinity" onEditCommit="#onPackEdit"
-                      onMouseClicked="#onPackList" prefHeight="200.0" prefWidth="250.0">
+            <ListView fx:id="packList" minHeight="-Infinity" minWidth="-Infinity" onEditCommit="#onPackEdit" onMouseClicked="#onPackList" prefHeight="200.0" prefWidth="250.0">
                 <VBox.margin>
-                    <Insets left="5.0"/>
+                    <Insets left="5.0" />
                 </VBox.margin>
             </ListView>
-            <Separator opacity="0.0" orientation="VERTICAL" prefHeight="10.0"/>
-            <TreeView fx:id="perkTree" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#onPerkTree"
-                      prefHeight="277.0" prefWidth="250.0">
+            <Separator opacity="0.0" orientation="VERTICAL" prefHeight="10.0" />
+            <TreeView fx:id="perkTree" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#onPerkTree" prefHeight="277.0" prefWidth="250.0">
                 <VBox.margin>
-                    <Insets left="5.0"/>
+                    <Insets left="5.0" />
                 </VBox.margin>
             </TreeView>
-            <Separator opacity="0.0" orientation="VERTICAL" prefHeight="10.0"/>
+            <Separator opacity="0.0" orientation="VERTICAL" prefHeight="10.0" />
         </VBox>
     </left>
     <center>
-        <ImageView fx:id="iconDisplay" fitHeight="410.0" fitWidth="400.0" pickOnBounds="true" preserveRatio="true"
-                   BorderPane.alignment="CENTER">
+        <ImageView fx:id="iconDisplay" fitHeight="410.0" fitWidth="400.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
             <BorderPane.margin>
-                <Insets/>
+                <Insets />
             </BorderPane.margin>
-            <Image url="@../pic/pbd_icon.png"/>
+            <Image url="@../pic/pbd_icon.png" />
             <viewport>
-                <Rectangle2D/>
+                <Rectangle2D />
             </viewport>
         </ImageView>
     </center>

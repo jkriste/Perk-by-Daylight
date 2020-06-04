@@ -6,10 +6,8 @@ public enum LogType {
 
     INFO("INFO"),
     DEBUG("DEBUG"),
-    COMMAND("COMMAND"),
     WARN("WARN"),
-    ERROR("ERROR"),
-    FATAL("FATAL");
+    ERROR("ERROR");
 
     private final String prefix;
 
@@ -27,20 +25,15 @@ public enum LogType {
             case INFO:
                 a.fgBrightGreen().a(prefix);
                 break;
-            case COMMAND:
+            case DEBUG:
                 a.fgCyan().a(prefix);
                 break;
-            case DEBUG:
-                a.fgYellow().a(prefix);
-                break;
             case WARN:
-                a.fgBrightMagenta().a(prefix);
-                break;
-            case ERROR:
                 a.fgBrightRed().a(prefix);
                 break;
-            case FATAL:
+            case ERROR:
                 a.fgRed().a(prefix);
+                break;
         }
         return a.fgBrightBlack().a("] ").reset();
     }

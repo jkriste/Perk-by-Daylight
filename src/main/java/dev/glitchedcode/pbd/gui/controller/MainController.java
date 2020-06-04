@@ -1,14 +1,11 @@
 package dev.glitchedcode.pbd.gui.controller;
 
 import dev.glitchedcode.pbd.PBD;
-import dev.glitchedcode.pbd.dbd.Addon;
-import dev.glitchedcode.pbd.dbd.Offering;
-import dev.glitchedcode.pbd.dbd.Perk;
-import dev.glitchedcode.pbd.dbd.Portrait;
+import dev.glitchedcode.pbd.dbd.Icon;
+import dev.glitchedcode.pbd.file.Files;
 import dev.glitchedcode.pbd.json.LatestRelease;
 import dev.glitchedcode.pbd.logger.Logger;
 import dev.glitchedcode.pbd.pack.IconPack;
-import dev.glitchedcode.pbd.util.FileUtil;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -16,11 +13,13 @@ import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.TextFieldListCell;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
@@ -28,17 +27,19 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.awt.Desktop;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.file.Files;
 import java.util.ResourceBundle;
 
 public class MainController implements Initializable {
 
     @FXML private Label status;
     @FXML private Menu iconMenu;
+    @FXML private MenuBar menuBar;
     @FXML private ImageView iconDisplay;
     @FXML private CheckMenuItem darkMode;
     @FXML private ProgressBar progressBar;
@@ -50,6 +51,8 @@ public class MainController implements Initializable {
 
     private Stage stage;
     private static final Logger logger = PBD.getLogger();
+    private static final String NEW_PACK = "+ Add New Icon Pack";
+    private static final String INSTALLED = "Currently Installed";
     private static final URL darkTheme = PBD.class.getResource("/theme/dark-theme.css");
 
     public void setStage(Stage stage) {
@@ -84,6 +87,7 @@ public class MainController implements Initializable {
         deleteIconPack.setVisible(false);
         installIconPack.setVisible(false);
         constructIconPacks();
+        // Makes the icon pack list editable.
         packList.setEditable(true);
         packList.setCellFactory(TextFieldListCell.forListView());
     }
@@ -97,21 +101,31 @@ public class MainController implements Initializable {
     public void onCheckUpdate(ActionEvent event) {
         status.setText("Checking for update...");
         status.setVisible(true);
+        if (LatestRelease.checkUpdate()) {
+            setStatus("Update available, downloading...", false);
+            // TODO
+        } else
+            setStatus("Latest version is installed.", false);
+    }
+
+    /**
+     * Called when the "Delete Temp Contents" menu item is clicked.
+     *
+     * @param event The action event.
+     */
+    @FXML
+    public void onDeleteTempContents(ActionEvent event) {
+        int count = Files.getCount(PBD.getTempDir());
+        if (count == 0) {
+            setStatus("No files were found in the 'temp' folder.", false);
+            return;
+        }
         try {
-            LatestRelease latest = PBD.checkUpdate();
-            if (latest != null) {
-                if (latest.isUpdate()) {
-                    setStatus("Update available, downloading...", false);
-                    // TODO
-                } else
-                    setStatus("Latest version is installed.", false);
-            } else {
-                setStatus("Failed to parse JSON, check logs.", true);
-            }
+            Files.deleteAll(PBD.getTempDir(), false);
+            setStatus("Deleted " + count + " file(s) in 'temp' folder.", false);
         } catch (IOException e) {
-            logger.warn("Failed to check for update: {}", e.getMessage());
+            logger.warn("Failed to delete contents in 'temp' dir: {}", e.getMessage());
             logger.handleError(Thread.currentThread(), e);
-            setStatus("Failed to get update, check logs.", true);
         }
     }
 
@@ -149,12 +163,7 @@ public class MainController implements Initializable {
      */
     @FXML
     public void onNewIconPack(ActionEvent event) {
-        try {
-            addNewPack();
-        } catch (IOException e) {
-            logger.warn("Failed to add new icon pack: {}", e.getMessage());
-            logger.handleError(Thread.currentThread(), e);
-        }
+        addNewPack();
     }
 
     /**
@@ -165,10 +174,9 @@ public class MainController implements Initializable {
     @FXML
     public void onPackEdit(ListView.EditEvent<String> event) {
         String old = packList.getItems().get(event.getIndex());
-        if (old != null && !old.equalsIgnoreCase("Currently Installed")
-                && !old.equalsIgnoreCase("+ Add New Icon Pack")) {
+        if (old != null && !old.equalsIgnoreCase(INSTALLED) && !old.equalsIgnoreCase(NEW_PACK)) {
             String newName = event.getNewValue();
-            if (newName.equalsIgnoreCase("+ Add New Icon Pack")) {
+            if (newName.equalsIgnoreCase(NEW_PACK)) {
                 setStatus("Not acceptable new name.", false);
                 return;
             }
@@ -215,14 +223,18 @@ public class MainController implements Initializable {
     @FXML
     public void onInstallIconPack(ActionEvent event) {
         String name = packList.getSelectionModel().getSelectedItem();
-        if (!name.equalsIgnoreCase("+ Add New Icon Pack") && !name.equalsIgnoreCase("Currently Installed")) {
+        if (!name.equalsIgnoreCase(NEW_PACK) && !name.equalsIgnoreCase(INSTALLED)) {
             IconPack pack = IconPack.fromName(name);
             if (pack == null) {
                 logger.warn("Failed to get icon pack from name with name '{}'", name);
                 return;
             }
+            setDisabled(true);
             setStatus("Installing icon pack '" + name + "'...", false);
-            pack.install(progressBar, () -> setStatus("Icon pack '" + name + "' installed.", false));
+            pack.install(progressBar, () -> {
+                setStatus("Icon pack '" + name + "' installed.", false);
+                setDisabled(false);
+            });
         }
     }
 
@@ -234,8 +246,7 @@ public class MainController implements Initializable {
     @FXML
     public void onDeleteIconPack(ActionEvent event) {
         String name = packList.getSelectionModel().getSelectedItem();
-        if (name != null && !name.equalsIgnoreCase("+ Add New Icon Pack")
-            && !name.equalsIgnoreCase("Currently Installed")) {
+        if (name != null && !name.equalsIgnoreCase(NEW_PACK) && !name.equalsIgnoreCase(INSTALLED)) {
             IconPack pack = IconPack.fromName(name);
             if (pack == null) {
                 logger.warn("Failed to get icon pack from name with name '{}'", name);
@@ -243,9 +254,17 @@ public class MainController implements Initializable {
             }
             iconDisplay.setImage(null);
             perkTree.setRoot(null);
+            iconMenu.setVisible(false);
+            installIconPack.setVisible(false);
+            deleteIconPack.setVisible(false);
             File folder = pack.getFolder();
             pack.dispose();
-            deleteFolder(folder);
+            try {
+                Files.deleteAll(folder, true);
+            } catch (IOException e) {
+                logger.warn("Failed to delete icon pack '{}': {}", pack.getMeta().getName(), e.getMessage());
+                logger.handleError(Thread.currentThread(), e);
+            }
             setStatus("Deleted icon pack '" + name + "'.", false);
             constructIconPacks();
         }
@@ -253,7 +272,7 @@ public class MainController implements Initializable {
 
     @FXML
     public void onInstallIcon(ActionEvent event) {
-
+        
     }
 
     @FXML
@@ -270,39 +289,18 @@ public class MainController implements Initializable {
         TreeItem<String> parent = selected.getParent();
         if (parent == null)
             return;
-        String name = perkTree.getSelectionModel().getSelectedItem().getValue();
-        if (!name.equalsIgnoreCase("Perks") && !name.equalsIgnoreCase("Addons")
-                && !name.equalsIgnoreCase("Portraits") && !name.equalsIgnoreCase("Offerings")) {
+        if (selected.getChildren().isEmpty()) {
+            String name = perkTree.getSelectionModel().getSelectedItem().getValue();
             IconPack pack = IconPack.fromName(iconName);
             if (pack == null) {
                 logger.warn("Failed to get icon pack from name '{}'", iconName);
                 return;
             }
-            logger.debug(parent.getValue());
-            switch (parent.getValue()) {
-                case "Perks":
-                    Perk perk = Perk.fromProperName(name);
-                    if (perk != null)
-                        iconDisplay.setImage(FileUtil.toImage(perk.asFile(pack.getFolder())));
-                    break;
-                case "Portraits":
-                    Portrait portrait = Portrait.fromProperName(name);
-                    if (portrait != null)
-                        iconDisplay.setImage(FileUtil.toImage(portrait.asFile(pack.getFolder())));
-                    break;
-                case "Addons":
-                    Addon addon = Addon.fromProperName(name);
-                    if (addon != null)
-                        iconDisplay.setImage(FileUtil.toImage(addon.asFile(pack.getFolder())));
-                    break;
-                case "Offerings":
-                    Offering offering = Offering.fromProperName(name);
-                    if (offering != null)
-                        iconDisplay.setImage(FileUtil.toImage(offering.asFile(pack.getFolder())));
-                    break;
-                default:
-                    logger.warn("Couldn't find icon with name '{}' and parent '{}'", name, parent.getValue());
-            }
+            Icon icon = PBD.getIcon(name);
+            if (icon != null)
+                iconDisplay.setImage(toImage(icon.asFile(pack.getFolder())));
+            else
+                logger.warn("Couldn't find icon with name '{}'", name);
             iconMenu.setVisible(true);
         }
     }
@@ -315,16 +313,11 @@ public class MainController implements Initializable {
             return;
         }
         logger.debug("Clicked on: {}", name);
-        if (name.equalsIgnoreCase("+ Add New Icon Pack")) {
+        if (name.equalsIgnoreCase(NEW_PACK)) {
             installIconPack.setVisible(false);
             deleteIconPack.setVisible(false);
             perkTree.setRoot(null);
-            try {
-                addNewPack();
-            } catch (IOException e) {
-                logger.warn("Failed to add new icon pack: {}", e.getMessage());
-                logger.handleError(Thread.currentThread(), e);
-            }
+            addNewPack();
             return;
         }
         IconPack pack = IconPack.fromName(name);
@@ -347,6 +340,12 @@ public class MainController implements Initializable {
         setMode(false);
     }
 
+    private void setDisabled(boolean disabled) {
+        perkTree.setDisable(disabled);
+        packList.setDisable(disabled);
+        menuBar.setDisable(disabled);
+    }
+
     private void setStatus(@Nonnull String status, boolean error) {
         if (error)
             this.status.setTextFill(Color.RED);
@@ -358,36 +357,20 @@ public class MainController implements Initializable {
 
     private void constructIconPacks() {
         packList.getItems().clear();
-        IconPack installed = IconPack.fromName("Currently Installed");
+        IconPack installed = IconPack.fromName(INSTALLED);
         if (installed == null) {
             installed = IconPack.of(PBD.getIconsDir());
             if (installed != null)
-                installed.setName("Currently Installed");
+                installed.setName(INSTALLED);
         }
         IconPack.getPacks().forEach(pack -> packList.getItems().add(pack.getMeta().getName()));
-        packList.getItems().add("+ Add New Icon Pack");
+        packList.getItems().add(NEW_PACK);
         packList.refresh();
+        deleteIconPack.setVisible(false);
+        installIconPack.setVisible(false);
     }
 
-    private void addNewPack() throws IOException {
-//        JFileChooser fileChooser = new JFileChooser(new File(System.getProperty("user.home"), "Downloads"));
-//        fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-//        fileChooser.setFileFilter(new FileFilter() {
-//            @Override
-//            public boolean accept(File f) {
-//                return f.isDirectory() || f.getName().endsWith(".zip") || f.getName().endsWith(".rar");
-//            }
-//
-//            @Override
-//            public String getDescription() {
-//                return "Directories, .ZIP, .RAR";
-//            }
-//        });
-//        Action detailsView = fileChooser.getActionMap().get("viewTypeDetails");
-//        detailsView.actionPerformed(null);
-//        fileChooser.showOpenDialog(null);
-//        fileChooser.requestFocus();
-//        File file = fileChooser.getSelectedFile();
+    private void addNewPack() {
         FileChooser chooser = new FileChooser();
         chooser.setInitialDirectory(new File(System.getProperty("user.home"), "Downloads"));
         FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("ZIP Files", "*.zip");
@@ -396,50 +379,23 @@ public class MainController implements Initializable {
         if (file == null)
             return;
         processFile(file);
+        constructIconPacks();
     }
 
-    @SuppressWarnings("UnstableApiUsage")
-    private void processFile(@Nonnull File file) throws IOException {
-        File newDir;
-        if (file.isDirectory()) {
-            com.google.common.io.Files.copy(file, PBD.getPacksDir());
-            newDir = new File(PBD.getPacksDir(), file.getName());
-        } else if (file.getName().endsWith(".zip")) {
-            newDir = FileUtil.unzipFile(file, PBD.getPacksDir());
-        } else {
-            logger.error("Didn't know how to process file '{}', not dir/zip/rar.", file.getAbsolutePath());
-            return;
-        }
-        if (newDir != null && newDir.exists() && newDir.isDirectory()) {
-            IconPack pack = IconPack.of(newDir);
-            if (pack != null) {
-                setStatus("Added new icon pack '" + pack.getMeta().getName() + "'.", false);
-                constructIconPacks();
-            }
-        } else {
-            if (newDir == null) {
-                logger.error("newDir is null.");
-                return;
-            }
-            logger.warn("newDir ({}) didn't exist or wasn't a directory.", newDir.toString());
-        }
+    private void processFile(@Nonnull File file) {
+        IconPack pack = IconPack.newPack(file, progressBar);
+        if (pack == null)
+            setStatus("Failed to process file, check logs.", true);
     }
 
-    private void deleteFolder(@Nonnull File file) {
-        assert (file.exists() && file.isDirectory());
-        File[] files = file.listFiles();
-        if (files != null) {
-            for (File f : files) {
-                if (f.isDirectory())
-                    deleteFolder(f);
-                try {
-                    Files.delete(f.toPath());
-                } catch (IOException e) {
-                    logger.warn("Failed to delete file '{}': {}, will delete on exit instead.",
-                            file.getName(), e.getMessage());
-                    file.deleteOnExit();
-                }
-            }
+    @Nullable
+    private Image toImage(@Nonnull File file) {
+        try (FileInputStream in = new FileInputStream(file)) {
+            return new Image(in);
+        } catch (IOException e) {
+            logger.warn("Failed to get JavaFX Image from file '{}': {}", file.getAbsolutePath(), e.getMessage());
+            logger.handleError(Thread.currentThread(), e);
         }
+        return null;
     }
 }

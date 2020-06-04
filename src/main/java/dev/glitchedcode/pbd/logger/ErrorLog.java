@@ -31,7 +31,7 @@ public class ErrorLog {
             if (log.createNewFile())
                 logger.debug("Created error log \"" + log.getName() + "\".");
             BetterPrintWriter writer = new BetterPrintWriter(new BufferedWriter(new FileWriter(log, false)));
-            Stream.of("Error log of PerkByDaylight v" + PBD.VERSION,
+            Stream.of("Error log of PerkByDaylight " + PBD.VERSION,
                     "// Here we go again :(",
                     "",
                     "Occurrence: " + (new SimpleDateFormat("dd-MM-yyyy 'at' HH:mm:ss z")).format(new Date()),
