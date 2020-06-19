@@ -12,7 +12,6 @@ import dev.glitchedcode.pbd.dbd.Portrait;
 import dev.glitchedcode.pbd.gui.Icon;
 import dev.glitchedcode.pbd.gui.controller.MainController;
 import dev.glitchedcode.pbd.json.Config;
-import dev.glitchedcode.pbd.json.LatestRelease;
 import dev.glitchedcode.pbd.logger.Logger;
 import dev.glitchedcode.pbd.pack.IconPack;
 import javafx.application.Application;
@@ -35,13 +34,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -59,13 +54,9 @@ public class PBD extends Application {
      */
     private static File DBD_DIR;
     /**
-     * True if debug messages will be displayed to the console/logger.
-     */
-    private static boolean DEBUG;
-    /**
      * Handles the logging of info into a text file located in the 'Perk by Daylight' folder.
      */
-    private static Logger logger;
+    private static Logger LOGGER;
     /**
      * The config file instance, located in the 'Perk by Daylight' folder.
      */
@@ -74,10 +65,6 @@ public class PBD extends Application {
      * The location of the "Icons" folder in DBD.
      */
     private static File ICONS_DIR;
-    /**
-     * True if the logger will not output color to the console.
-     */
-    private static boolean NO_COLOR;
     /**
      * The PerkByDaylight folder located in the %appdata% folder.
      */
@@ -113,7 +100,7 @@ public class PBD extends Application {
     /**
      * Used to schedule async tasks.
      */
-    private static final ScheduledExecutorService SERVICE = Executors.newScheduledThreadPool(2);
+    private static final ScheduledExecutorService SERVICE = Executors.newScheduledThreadPool(1);
 
     static {
         APP_DATA_DIR = new File(System.getenv("APPDATA"));
@@ -138,36 +125,30 @@ public class PBD extends Application {
             else
                 popup("Failed to create folder:\n{}", Icon.ERROR, PBD_DIR.getAbsolutePath());
         }
-        // Install Jansi
-        AnsiConsole.systemInstall();
-        // get runtime args
-        DEBUG = hasArg("-debug", args);
-        NO_COLOR = hasArg("-nocolor", args);
-        // Create out logger for info & error reporting
-        logger = new Logger(PBD_DIR);
-        if (DEBUG)
-            logger.debug("Debug mode has been enabled. Expect excessive spam.");
-        // Letting the logger handle errors.
-        Thread.setDefaultUncaughtExceptionHandler(getExceptionHandler());
         // Builds our Gson object used to read & write to/from JSON files.
         GSON = new GsonBuilder()
                 .setPrettyPrinting()
                 .setLenient()
                 .create();
-        // Load config file
+        // load config file
         CONFIG = loadConfig();
         if (CONFIG == null) {
-            logger.error("'config.json' was not saved properly last run and is empty/corrupt.");
-            logger.error("The file will be deleted on exit and regenerated on restart.");
+            System.out.println("'config.json' was not saved properly last run and is empty/corrupt.");
+            System.out.println("The file will be deleted on exit and regenerated on restart.");
             CONFIG_FILE.deleteOnExit();
             System.exit(0);
         }
+        // Install Jansi
+        AnsiConsole.systemInstall();
+        // Create out LOGGER for info & error reporting
+        LOGGER = new Logger(PBD_DIR);
+        if (CONFIG.debug())
+            LOGGER.debug("Debug mode has been enabled. Expect excessive spam.");
+        // Letting the LOGGER handle errors.
+        Thread.setDefaultUncaughtExceptionHandler(getExceptionHandler());
         // Set up all additional files & folders.
         setupFiles();
-//        File addons = new File(ICONS_DIR, "Items");
-//        File[] addonFiles = addons.listFiles();
-//        assert (addons.exists() && addons.isDirectory() && addonFiles != null);
-//        System.out.println(buildOfferingsEnum(addonFiles, null));
+        // Launch the application
         launch(args);
     }
 
@@ -177,14 +158,14 @@ public class PBD extends Application {
      * @param code The exit code.
      */
     public static void close(int code) {
-        logger.debug("Closing application with code {}", code);
+        LOGGER.debug("Closing application with code {}", code);
         Platform.exit();
-        logger.debug("Closed application with Platform#exit");
+        LOGGER.debug("Closed application with Platform#exit");
         IconPack.saveAll();
-        logger.debug("Saved all icon packs.");
+        LOGGER.debug("Saved all icon packs.");
         saveConfig();
-        logger.debug("Saved config...closing logger.");
-        logger.close();
+        LOGGER.debug("Saved config...closing logger.");
+        LOGGER.close();
         SERVICE.shutdown();
         try {
             if (!SERVICE.awaitTermination(500, TimeUnit.MILLISECONDS))
@@ -197,30 +178,12 @@ public class PBD extends Application {
     }
 
     /**
-     * Gets the logger instance.
+     * Gets the LOGGER instance.
      *
-     * @return The logger instance.
+     * @return The LOGGER instance.
      */
     public static Logger getLogger() {
-        return logger;
-    }
-
-    /**
-     * Gets whether debug mode is enabled.
-     *
-     * @return True if debug mode is enabled.
-     */
-    public static boolean debug() {
-        return DEBUG;
-    }
-
-    /**
-     * Gets whether "no color" mode is enabled.
-     *
-     * @return True if "no color" mode is enabled.
-     */
-    public static boolean noColor() {
-        return NO_COLOR;
+        return LOGGER;
     }
 
     /**
@@ -311,7 +274,7 @@ public class PBD extends Application {
      * @return The default {@link java.lang.Thread.UncaughtExceptionHandler}.
      */
     public static Thread.UncaughtExceptionHandler getExceptionHandler() {
-        return logger::handleError;
+        return LOGGER::handleError;
     }
 
     /**
@@ -395,45 +358,21 @@ public class PBD extends Application {
     }
 
     /**
-     * Pulls the update.json file and packs it into a {@link LatestRelease} class.
-     *
-     * @return The update.json file as a {@link LatestRelease} instance.
-     * @throws IOException Thrown for bad reasons.
-     */
-    @Nullable
-    public static LatestRelease checkUpdate() throws IOException {
-        logger.debug("Checking for update...");
-        LatestRelease release;
-        URL url = new URL("https://raw.githubusercontent.com/glitchedcoder/glitchedcode.dev/master/update.json");
-        logger.debug("Trying to access JSON file @ {}", url.toString());
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()))) {
-            StringBuilder buffer = new StringBuilder();
-            int read;
-            char[] chars = new char[1024];
-            while ((read = reader.read(chars)) != -1)
-                buffer.append(chars, 0, read);
-            logger.debug("Fetched the following JSON from raw file:\n{}", buffer.toString());
-            release = GSON.fromJson(buffer.toString(), LatestRelease.class);
-        }
-        return release;
-    }
-
-    /**
      * Saves the {@link Config} instance to 'config.json'
      */
     public static void saveConfig() {
-        logger.debug("Trying to save config.json file...");
+        LOGGER.debug("Trying to save config.json file...");
         if (CONFIG == null) {
-            logger.warn("#saveConfig() called whilst Config instance is null.");
+            LOGGER.warn("#saveConfig() called whilst Config instance is null.");
             return;
         }
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(CONFIG_FILE))) {
             GSON.toJson(CONFIG, Config.class, writer);
             writer.flush();
-            logger.debug("Config saved successfully.");
+            LOGGER.debug("Config saved successfully.");
         } catch (IOException e) {
-            logger.warn("Failed to save config.json: {}", e.getMessage());
-            logger.handleError(Thread.currentThread(), e);
+            LOGGER.warn("Failed to save config.json: {}", e.getMessage());
+            LOGGER.handleError(Thread.currentThread(), e);
         }
     }
 
@@ -453,12 +392,12 @@ public class PBD extends Application {
 
     @Nullable
     public static dev.glitchedcode.pbd.dbd.Icon getIcon(@Nonnull String properName) {
-        logger.debug("Getting icon with proper name '{}'", properName);
+        LOGGER.debug("Getting icon with proper name '{}'", properName);
         for (dev.glitchedcode.pbd.dbd.Icon icon : getIcons()) {
             if (icon.getProperName().equalsIgnoreCase(properName))
                 return icon;
         }
-        logger.warn("Could not find icon with proper name '{}', might not be registered?", properName);
+        LOGGER.warn("Could not find icon with proper name '{}', might not be registered?", properName);
         return null;
     }
 
@@ -481,11 +420,9 @@ public class PBD extends Application {
         if (!CONFIG_FILE.exists()) {
             try {
                 if (CONFIG_FILE.createNewFile()) {
-                    logger.debug("Successfully created new config file at '{}'", CONFIG_FILE.getAbsolutePath());
-                    Config config = new Config();
-                    config.setDbdFolder(""); // this is meant to be empty
+                    System.out.println("Created config file at: " + CONFIG_FILE.getAbsolutePath());
+                    Config config = new Config(true);
                     // save to the config since it's first-time
-                    logger.debug("JSON:\n{}", GSON.toJson(config, Config.class));
                     JsonWriter writer = new JsonWriter(new FileWriter(CONFIG_FILE, false));
                     GSON.toJson(config, Config.class, writer);
                     writer.flush();
@@ -493,15 +430,15 @@ public class PBD extends Application {
                     return config;
                 }
             } catch (IOException e) {
-                logger.warn("Failed to create/save config file @ '{}'", CONFIG_FILE.getAbsolutePath());
-                logger.handleError(Thread.currentThread(), e);
+                System.out.println("Failed to create/save config file: " + e.getMessage());
+                e.printStackTrace();
             }
         } else {
             try (BufferedReader reader = new BufferedReader(new FileReader(CONFIG_FILE))) {
                 return GSON.fromJson(reader, Config.class);
             } catch (IOException e) {
-                logger.warn("Failed to read from config file '{}': {}", CONFIG_FILE.getAbsolutePath(), e.getMessage());
-                logger.handleError(Thread.currentThread(), e);
+                System.out.println("Failed to read from config file: " + e.getMessage());
+                e.printStackTrace();
             }
         }
         return null;
@@ -509,22 +446,22 @@ public class PBD extends Application {
 
     private static void setupFiles() {
         // Make sure local %appdata% folder exists.
-        logger.debug("%appdata% directory path: {}", APP_DATA_DIR.getAbsolutePath());
+        LOGGER.debug("%appdata% directory path: {}", APP_DATA_DIR.getAbsolutePath());
         if (!APP_DATA_DIR.exists()) {
             popup("Missing app data directory:\n{}", Icon.ERROR, APP_DATA_DIR.getAbsolutePath());
             close(0);
         }
-        logger.debug("Icon pack cache directory path: {}", PACKS_DIR.getAbsolutePath());
+        LOGGER.debug("Icon pack cache directory path: {}", PACKS_DIR.getAbsolutePath());
         if (!PACKS_DIR.exists()) {
             if (PACKS_DIR.mkdir())
-                logger.debug("Created 'packs' folder in 'Perk by Daylight' folder.");
+                LOGGER.debug("Created 'packs' folder in 'Perk by Daylight' folder.");
         } else {
             File[] files = PACKS_DIR.listFiles();
             assert (PACKS_DIR.isDirectory() && files != null);
-            logger.debug("{} files/directories found in '{}'", files.length, PACKS_DIR.getAbsolutePath());
+            LOGGER.debug("{} files/directories found in '{}'", files.length, PACKS_DIR.getAbsolutePath());
             for (File file : files) {
                 if (IconPack.of(file) == null) {
-                    logger.warn("File/directory '{}' could not be determined" +
+                    LOGGER.warn("File/directory '{}' could not be determined" +
                             " as an icon pack, deleting on exit.", file.getName());
                     file.deleteOnExit();
                 }
@@ -532,7 +469,7 @@ public class PBD extends Application {
         }
         if (!TEMP_DIR.exists()) {
             if (TEMP_DIR.mkdir())
-                logger.debug("Created 'temp' folder in 'Perk by Daylight' folder.");
+                LOGGER.debug("Created 'temp' folder in 'Perk by Daylight' folder.");
         }
         // Checks if the default DBD folder exists, if not let the user get the folder.
         DBD_DIR = getDBDFolder();
@@ -554,7 +491,7 @@ public class PBD extends Application {
         // Check if the default DBD folder exists & verify it's the DBD folder.
         if (DBD_DIR.exists() && isDBD(DBD_DIR))
             return DBD_DIR;
-        logger.debug("Could not locate default DBD dir '{}'", DBD_DIR.getAbsolutePath());
+        LOGGER.debug("Could not locate default DBD dir '{}'", DBD_DIR.getAbsolutePath());
         int result = JOptionPane.showConfirmDialog(null,
                 "Could not locate the default Dead by Daylight folder.\n"
                 + "Locate the folder manually?", "Perk by Daylight", JOptionPane.YES_NO_OPTION);
@@ -570,7 +507,7 @@ public class PBD extends Application {
             if (r == JFileChooser.CANCEL_OPTION)
                 System.exit(0);
             folder = fileChooser.getSelectedFile();
-            logger.debug("Selected folder: {}", folder.getAbsolutePath());
+            LOGGER.debug("Selected folder: {}", folder.getAbsolutePath());
             if (!folder.getName().equalsIgnoreCase("Dead by Daylight")) {
                 popup("Select the \"Dead by Daylight\" folder.", Icon.INFO);
                 continue;
@@ -598,76 +535,13 @@ public class PBD extends Application {
     }
 
     /**
-     * Checks if there's a given argument in the array of args.
-     * <br />
-     * Used to check for any runtime args such as {@code -debug} or {@code -nocolor}.
-     *
-     * @param arg The argument to check for.
-     * @param args The array of args given in {@code main(String[])}
-     * @return True if the given arg is in the array of args.
-     */
-    private static boolean hasArg(String arg, String[] args) {
-        for (String s : args) {
-            if (s.equalsIgnoreCase(arg))
-                return true;
-        }
-        return false;
-    }
-
-    /**
-     * Gets input from runtime args provided by {@code main(String[])}.
-     * <br />
-     * e.g. If I ran {@code java -jar someProgram.jar -color red -date july 24}
-     * the following would return "red" and "july 24" as String arrays:
-     * <br />
-     * {@code {"red"} = getInput('-', "color", args);}
-     * <br />
-     * {@code {"july", "24"} = getInput('-', "date", args);}
-     *
-     * @param c The prefix for args.
-     * @param arg The arg to get input for.
-     * @param args The runtime args.
-     * @return The input from runtime args or an empty array if arg is not in args.
-     */
-    private static String[] getInput(char c, String arg, String[] args) {
-        if (hasArg(c + arg, args)) {
-            List<String> list = new ArrayList<>();
-            int i = getIndex(c + arg, args);
-            if (i != -1) {
-                int k = 0;
-                for (int j = i + 1; j < args.length && !args[j].startsWith(c + ""); j++) {
-                    list.add(args[j]);
-                    k++;
-                }
-                return list.toArray(new String[k]);
-            }
-        }
-        return new String[0];
-    }
-
-    /**
-     * Gets the index of the given arg in the args array.
-     *
-     * @param arg The arg to check for.
-     * @param args The array of args.
-     * @return The index of the given arg or -1 if arg is not in args.
-     */
-    private static int getIndex(String arg, String[] args) {
-        for (int i = 0; i < args.length; i++) {
-            if (args[i].equalsIgnoreCase(arg))
-                return i;
-        }
-        return -1;
-    }
-
-    /**
      * Starts the {@link Application}.
      *
      * @param primaryStage The stage.
-     * @throws Exception Thrown for various reasons, but (usually) shouldn't happen.
+     * @throws IOException Thrown if the resource cannot be loaded.
      */
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/form/MainForm.fxml"));
         Parent parent = loader.load();
         MainController controller = loader.getController();
@@ -675,6 +549,7 @@ public class PBD extends Application {
         primaryStage.setTitle("Perk by Daylight " + PBD.VERSION);
         primaryStage.setOnHidden(event -> close(0));
         primaryStage.setScene(new Scene(parent));
+        primaryStage.setAlwaysOnTop(true);
         primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/pic/pbd_icon.png")));
         controller.setMode(CONFIG.isDarkMode());
         primaryStage.show();
@@ -698,8 +573,7 @@ public class PBD extends Application {
                     .append("\", ")
                     .append("\"")
                     .append(toTitleCase(enumName.replace('_', ' ')))
-                    .append(dirName != null ? "\", " : "\"")
-                    .append(dirName != null ? ("\"" + dirName + "\"") : "\b")
+                    .append(dirName != null ? ("\", \"" + dirName + "\"") : "\"")
                     .append("),\n");
         }
         builder.append(";");

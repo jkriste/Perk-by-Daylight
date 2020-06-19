@@ -1,6 +1,7 @@
 package dev.glitchedcode.pbd.logger;
 
 import dev.glitchedcode.pbd.PBD;
+import dev.glitchedcode.pbd.json.Config;
 import org.fusesource.jansi.Ansi;
 
 import java.io.BufferedWriter;
@@ -17,6 +18,7 @@ public class Logger {
     private final File dir, file;
     private final BetterPrintWriter writer;
     private final AtomicInteger errCount, warnCount;
+    private static final Config CONFIG = PBD.getConfig();
     private static final SimpleDateFormat FORMAT = new SimpleDateFormat("HH:mm:ss");
 
     public Logger(File dir) {
@@ -77,7 +79,7 @@ public class Logger {
 
     public void file(LogType type, String message) {
         if (isOpen()) {
-            if (type == LogType.DEBUG && !PBD.debug())
+            if (type == LogType.DEBUG && !CONFIG.debug())
                 return;
             this.writer.println(time() + thread() + type.getPrefix() + message);
             save();
@@ -95,13 +97,13 @@ public class Logger {
 
     public void console(LogType type, Ansi.Color color, String message) {
         if (isOpen()) {
-            if (type == LogType.DEBUG && !PBD.debug())
+            if (type == LogType.DEBUG && !CONFIG.debug())
                 return;
             if (type == LogType.ERROR)
                 errCount.incrementAndGet();
             else if (type == LogType.WARN)
                 warnCount.incrementAndGet();
-            if (PBD.noColor()) {
+            if (CONFIG.noColor()) {
                 System.out.println(time() + thread() + type.getPrefix() + message);
             } else {
                 System.out.print(Ansi.ansi().fgBrightBlack().a(time() + thread()));

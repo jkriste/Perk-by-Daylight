@@ -36,6 +36,8 @@ There are a list of arguments that is acceptable for Perk by Daylight.
 * `-debug` This will output optional dialog to the console and is often used to "debug" the program. Very verbose.
 * `-nocolor` This will disable coloring on the console and will make it harder to read. Perk by Daylight uses Jansi to output color and works with Windows Command Prompt.
 
+*Note: These optional command arguments have been moved to the config file and will no longer work next pre-release.*
+
 ## About
 
 ### Notes
@@ -64,11 +66,12 @@ That's it!
 * The ability to rename an existing icon pack.
 * The ability to see your currently installed icons.
 * Packs are re-evaluated every launch in case files were messed with while closed.
+* Multi-threaded workload support, as to not lag UI and for a cleaner experience.
+* A UI-implementation of preferences.
 
 *Plan to be Added*
 * Edit/update already existing icon packs.
 * Get detailed information of the selected icon pack.
-* Multi-threaded workload support, as to not lag UI and for a cleaner experience.
 * A built-in dialog box for those who want to donate.
 * Lots of documentation that needs to be added.
 * Updating an old icon with a new icon.
@@ -77,14 +80,14 @@ That's it!
 *Might be Added*
 * The support for `.rar` files. This might not be possible since RAR files are proprietary and libraries like [JUnRAR](https://github.com/junrar/junrar) do not support WinRAR-compressed files.
 * A workshop for uploading, downloading, and viewing existing icon packs created by the Perk-by-Daylight community.
-* More themes.
+* More themes. See FAQ.
 
 ### Dependencies
 
 Currently, Perk by Daylight uses the following libraries as dependencies:
 * Google FindBugs v3.0.2
 * [Google GSON](https://github.com/google/gson) v2.8.6
-* [Google Guava](https://github.com/google/guava) v19.0
+* [Google Guava](https://github.com/google/guava) v19.0 (currently there is a security issue with this version and will be removed entirely from the project soon)
 * [Jansi](https://github.com/fusesource/jansi) v1.17.1
 * [OkHttp](https://github.com/square/okhttp) v4.7.2
 
@@ -105,6 +108,9 @@ Dependencies are automatically packed into the `.JAR` file and do not need to be
 
 *Easy Clearing of Cache* - Go to `File -> Delete Temp Contents` to delete all contents in the `temp` folder.
 ![Easy Clearing of Cahce](https://i.imgur.com/2DSCJq7.gif)
+
+*Easily Change Preferences* - Go to `File -> Preferences...` to change how the program operates.
+![Easily Change Preferences](https://i.imgur.com/GnaiLeK.gif)
 
 ## Frequently Asked Questions
 
@@ -137,7 +143,7 @@ All data that Perk by Daylight caches on your computer can be found by going to 
 
 **What about privacy? Is any of my data being collected?**
 
-Perk by Daylight will in no circumstances upload **ANY** data to anywhere. The only time Perk by Daylight will use the network is when downloading an update, when requested to. You have the option of ignoring updates (currently implemented in the `config.json` file, but needs to have a UI implementation), in which case, Perk by Daylight can be used without internet. I respect the privacy of anyone that uses Perk by Daylight and can guarantee that Perk by Daylight does not use the internet with the exception of downloading updates.
+Perk by Daylight will in no circumstances upload **ANY** data to anywhere. The only time Perk by Daylight will use the network is when downloading an update, when requested to. You have the option of ignoring updates by going to `File -> Preferences...` and checking the `Ignore Updates` option. Optionally, there is also a `Offline Mode` option, in which Perk by Daylight can be used without internet. I respect the privacy of anyone that uses Perk by Daylight and can guarantee that Perk by Daylight does not use the internet with the exception of downloading updates.
 
 **Why Java of all programming languages?**
 

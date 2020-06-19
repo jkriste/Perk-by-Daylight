@@ -14,37 +14,14 @@ import java.io.IOException;
 /**
  * Used for copying and moving files.
  * A better solution than using Google's Files class because pain in the ass.
+ * @deprecated To be removed entirely by next pre-release in favor of async tasks.
  */
+@Deprecated
 public final class Files {
 
     private static final Logger logger = PBD.getLogger();
 
     private Files() {
-    }
-
-    /**
-     *
-     *
-     * @param file
-     * @return
-     */
-    public static int getCount(@Nonnull File file) {
-        logger.debug("Getting file count for file '{}'", file.getName());
-        if (!file.exists())
-            return 0;
-        if (!file.isDirectory())
-            return 1;
-        File[] files = file.listFiles();
-        if (files == null)
-            return 1;
-        int count = 0;
-        for (File f : files) {
-            if (f.isDirectory())
-                count += getCount(f);
-            else
-                count++;
-        }
-        return count;
     }
 
     /**
@@ -94,7 +71,7 @@ public final class Files {
         }
         if (!to.exists()) {
             if (!to.createNewFile())
-                throw new IOException("");
+                throw new IOException("Could not create file '" + to.getAbsolutePath() + "'.");
         }
         logger.debug("Copying from '{}' to '{}'", from.getAbsolutePath(), to.getAbsolutePath());
         try (FileInputStream in = new FileInputStream(from);
@@ -148,6 +125,13 @@ public final class Files {
     public static File moveToDirectory(File from, File directory) throws IOException {
         File file = copy(from, directory);
         java.nio.file.Files.delete(from.toPath());
+        return file;
+    }
+
+    @ParametersAreNonnullByDefault
+    public static File moveDirectory(File dir1, File dir2) throws IOException {
+        File file = copyDirectory(dir1, dir2);
+        deleteAll(dir1, true);
         return file;
     }
 }

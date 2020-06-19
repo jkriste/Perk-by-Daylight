@@ -57,6 +57,7 @@ public class PackMeta {
                 continue;
             missingIcons.add(icon.getName());
         }
+        logger.debug("Re-evaluation of '{}' found {} missing icon(s).", name, missingIcons.size());
     }
 
     /**

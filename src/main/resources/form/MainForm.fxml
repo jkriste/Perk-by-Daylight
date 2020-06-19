@@ -10,6 +10,7 @@
     <top>
         <MenuBar fx:id="menuBar" BorderPane.alignment="CENTER">
             <Menu mnemonicParsing="false" text="File">
+            <MenuItem mnemonicParsing="false" onAction="#onPreferences" text="Preferences..." />
                 <MenuItem mnemonicParsing="false" onAction="#onCheckUpdate" text="Check For Update" />
             <MenuItem mnemonicParsing="false" onAction="#onDeleteTempContents" text="Delete Temp Contents" />
                 <MenuItem mnemonicParsing="false" onAction="#onOpenPBD" text="Open PBD Folder" />
@@ -32,7 +33,7 @@
         </MenuBar>
     </top>
     <bottom>
-        <GridPane prefHeight="30.0" prefWidth="611.0" style="-fx-background-color: derive(-fx-base, 15%);">
+        <GridPane prefHeight="30.0" prefWidth="611.0" style="-fx-background-color: derive(-fx-base, 20%);">
             <columnConstraints>
                 <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="500.0" minWidth="10.0" prefWidth="473.0" />
                 <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="500.0" minWidth="0.0" prefWidth="0.0" />

@@ -23,8 +23,9 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.FutureTask;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class IconPack {
@@ -36,7 +37,7 @@ public class IconPack {
     private static final AtomicInteger ID_GEN;
     private static final List<IconPack> packs;
     private static final Logger logger = PBD.getLogger();
-    private static final ScheduledExecutorService SERVICE = PBD.getService();
+    private static final ExecutorService SERVICE = PBD.getService();
 
     static {
         ID_GEN = new AtomicInteger(0);
@@ -83,7 +84,9 @@ public class IconPack {
     }
 
     public boolean refresh() {
+        logger.debug("Re-evaluating icon pack '{}'", meta.getName());
         if (!folder.exists()) {
+            logger.warn("Icon pack '{}' folder no longer exists and will be disposed of.", meta.getName());
             dispose();
             return false;
         }
@@ -197,7 +200,7 @@ public class IconPack {
             try {
                 pack.save();
             } catch (IOException e) {
-                logger.warn("Failed to save 'packmeta.json': {}", e.getMessage());
+                logger.warn("Failed to save 'packmeta.json' for icon pack '{}': {}", meta.getName(), e.getMessage());
                 logger.handleError(Thread.currentThread(), e);
             }
             return pack;
@@ -211,45 +214,76 @@ public class IconPack {
     public static IconPack newPack(File file, ProgressBar bar) {
         // check if file is dir/zip, as those are the only supported types.
         // TODO: Clean up - duplicate lines.
+//        if (file.isDirectory()) {
+//            try {
+//                File tempDir = Files.copyDirectory(file, new File(PBD.getTempDir(), file.getName()));
+//                if (!tempDir.exists())
+//                    throw new IOException("New dir in 'temp' file does not exist: " + tempDir.getAbsolutePath());
+//                if (PackMeta.eval(tempDir)) {
+//                    File newDir = Files.moveDirectory(tempDir, new File(PBD.getPacksDir(), tempDir.getName()));
+//                    if (!newDir.exists())
+//                        throw new IOException("New dir in 'packs' file does not exist: " + newDir.getAbsolutePath());
+//                    PackMeta meta = PackMeta.of(newDir);
+//                    if (meta == null)
+//                        throw new IconPackException("Icon pack '{}' was eval'd but #of returned null.", file.getName());
+//                    return new IconPack(newDir, meta);
+//                } else
+//                    logger.warn("The file/directory '{}' could not be evaluated as a proper icon pack.", file.getName());
+//            } catch (IOException e) {
+//                logger.warn("Failed to create a new icon pack '{}': {}", file.getName(), e.getMessage());
+//                logger.handleError(Thread.currentThread(), e);
+//            }
+//        } else if (file.getName().endsWith(".zip")) {
+//            ZipEvaluator evaluator = new ZipEvaluator(file, PBD.getTempDir(), bar);
+//            try {
+//                File tempDir = SERVICE.schedule(evaluator, 0, TimeUnit.MILLISECONDS).get();
+//                if (PackMeta.eval(tempDir)) {
+//                    File newDir = Files.moveDirectory(tempDir, new File(PBD.getPacksDir(), tempDir.getName()));
+//                    if (!newDir.exists())
+//                        throw new IOException("New dir in 'packs' file does not exist: " + newDir.getAbsolutePath());
+//                    PackMeta meta = PackMeta.of(newDir);
+//                    if (meta == null)
+//                        throw new IconPackException("Icon pack '{}' was eval'd but #of returned null.", file.getName());
+//                    return new IconPack(newDir, meta);
+//                } else
+//                    return null;
+//            } catch (Exception e) {
+//                logger.warn("Failed to unzip file '{}': {}", file.getName(), e.getMessage());
+//                logger.handleError(Thread.currentThread(), e);
+//            }
+//        } else
+//            logger.warn("Unsupported file '{}', not directory or .zip.", file.getName());
+        File tempDir;
         if (file.isDirectory()) {
-            try {
-                File tempDir = Files.copyDirectory(file, new File(PBD.getTempDir(), file.getName()));
-                if (!tempDir.exists())
-                    throw new IOException("New dir in 'temp' file does not exist: " + tempDir.getAbsolutePath());
-                if (PackMeta.eval(tempDir)) {
-                    File newDir = Files.copyDirectory(tempDir, new File(PBD.getPacksDir(), tempDir.getName()));
-                    if (!newDir.exists())
-                        throw new IOException("New dir in 'packs' file does not exist: " + newDir.getAbsolutePath());
-                    PackMeta meta = PackMeta.of(newDir);
-                    if (meta == null)
-                        throw new IconPackException("Icon pack '{}' was eval'd but #of returned null.", file.getName());
-                    return new IconPack(newDir, meta);
-                } else
-                    logger.warn("The file/directory '{}' could not be evaluated as a proper icon pack.", file.getName());
-            } catch (IOException e) {
-                logger.warn("Failed to create a new icon pack '{}': {}", file.getName(), e.getMessage());
-                logger.handleError(Thread.currentThread(), e);
-            }
+            tempDir = handleDir(file, bar);
         } else if (file.getName().endsWith(".zip")) {
-            ZipEvaluator evaluator = new ZipEvaluator(file, PBD.getTempDir(), bar);
-            try {
-                File tempDir = SERVICE.schedule(evaluator, 0, TimeUnit.MILLISECONDS).get();
-                if (PackMeta.eval(tempDir)) {
-                    File newDir = Files.copyDirectory(tempDir, new File(PBD.getPacksDir(), tempDir.getName()));
-                    if (!newDir.exists())
-                        throw new IOException("New dir in 'packs' file does not exist: " + newDir.getAbsolutePath());
-                    PackMeta meta = PackMeta.of(newDir);
-                    if (meta == null)
-                        throw new IconPackException("Icon pack '{}' was eval'd but #of returned null.", file.getName());
-                    return new IconPack(newDir, meta);
-                } else
-                    return null;
-            } catch (Exception e) {
-                logger.warn("Failed to unzip file '{}': {}", file.getName(), e.getMessage());
-                logger.handleError(Thread.currentThread(), e);
-            }
+            tempDir = handleZip(file, bar);
         } else
-            logger.warn("Unsupported file '{}', not directory or .zip.", file.getName());
+            throw new IconPackException("Unsupported file type '{}'", file.getName());
+        if (tempDir == null)
+            throw new IconPackException("tempDir returned null.");
+        if (PackMeta.eval(tempDir)) {
+            logger.info("tempDir was evaluated to be an icon pack.");
+        }
+        return null;
+    }
+
+    @ParametersAreNonnullByDefault
+    private static File handleDir(File dir, ProgressBar bar) {
+        return null;
+    }
+
+    @ParametersAreNonnullByDefault
+    private static File handleZip(File zip, ProgressBar bar) {
+//        ZipEvaluator evaluator = new ZipEvaluator(zip, PBD.getTempDir(), bar);
+//        FutureTask<File> task = new FutureTask<>(evaluator);
+//        try {
+//            Platform.runLater(task);
+//            return task.get();
+//        } catch (InterruptedException | ExecutionException e) {
+//            logger.warn("Failed to unzip file '{}': {}", zip.getName(), e.getMessage());
+//            logger.handleError(Thread.currentThread(), e);
+//        }
         return null;
     }
 
