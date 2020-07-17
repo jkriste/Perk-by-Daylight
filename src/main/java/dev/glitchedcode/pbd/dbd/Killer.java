@@ -22,7 +22,8 @@ public enum Killer implements Character {
     GHOST_FACE("Ghost Face"),
     DEMOGORGON("Demogorgon"),
     ONI("Oni"),
-    DEATHSLINGER("Deathslinger");
+    DEATHSLINGER("Deathslinger"),
+    EXECUTIONER("Executioner"); // conehead
 
     private final String name;
 

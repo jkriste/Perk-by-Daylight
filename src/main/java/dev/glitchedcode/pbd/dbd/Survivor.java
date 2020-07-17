@@ -24,7 +24,8 @@ public enum Survivor implements Character {
     NANCY("Nancy Wheeler"),
     STEVE("Steve Harrington"),
     YUI("Yui Kimura"),
-    ZARINA("Zarina Kassir");
+    ZARINA("Zarina Kassir"),
+    CHERYL("Cheryl Mason");
 
     private final String name;
 

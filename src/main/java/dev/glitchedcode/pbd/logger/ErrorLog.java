@@ -34,6 +34,8 @@ public class ErrorLog {
             Stream.of("Error log of PerkByDaylight " + PBD.VERSION,
                     "// Here we go again :(",
                     "",
+                    "Please report bugs and issues here: https://github.com/glitchedcoder/Perk-by-Daylight/issues/new/choose",
+                    "",
                     "Occurrence: " + (new SimpleDateFormat("dd-MM-yyyy 'at' HH:mm:ss z")).format(new Date()),
                     "",
                     "Thread: " + thread.getName(),

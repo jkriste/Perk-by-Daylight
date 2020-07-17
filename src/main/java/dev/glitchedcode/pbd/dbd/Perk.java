@@ -4,6 +4,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import static dev.glitchedcode.pbd.dbd.Survivor.*;
 import static dev.glitchedcode.pbd.dbd.Killer.*;
 
@@ -154,7 +157,13 @@ public enum Perk implements Icon {
     UNRELENTING("unrelenting", "Unrelenting", WRAITH),
     URBAN_EVASION("urbanEvasion", "Urban Evasion", NEA),
     WELL_MAKE_IT("wellMakeIt", "We'll Make It"),
-    WHISPERS("whispers", "Whispers");
+    WHISPERS("whispers", "Whispers"),
+    BLOOD_PACT("bloodPact", "Blood Pact", "Wales", CHERYL),
+    REPRESSED_ALLIANCE("repressedAlliance", "Repressed Alliance", "Wales", CHERYL),
+    SOUL_GUARD("soulGuard", "Soul Guard", "Wales", CHERYL),
+    DEATHBOUND("deathbound", "Deathbound", "Wales", EXECUTIONER),
+    FORCED_PENANCE("forcedPenance", "Forced Penance", "Wales", EXECUTIONER),
+    TRAIL_OF_TORMENT("trailOfTorment", "Trail of Torment", "Wales", EXECUTIONER);
 
     private final String name;
     private final String subFolder;
@@ -244,5 +253,17 @@ public enum Perk implements Icon {
                 return perk;
         }
         return null;
+    }
+
+    public static Set<Perk> fromCharacter(@Nonnull Character character) {
+        Set<Perk> perks = new HashSet<>();
+        for (Perk perk : VALUES) {
+            Character c = perk.getCharacter();
+            if (c == null)
+                continue;
+            if (c.getName().equalsIgnoreCase(character.getName()))
+                perks.add(perk);
+        }
+        return perks;
     }
 }

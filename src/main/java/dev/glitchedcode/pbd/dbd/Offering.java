@@ -9,6 +9,7 @@ public enum Offering implements Icon {
     BLOODY_PARTY_STREAMERS("bloodyPartyStreamers", "Bloody Party Streamers", "Anniversary"),
     ESCAPE_CAKE("escapeCake", "Escape Cake", "Anniversary"),
     GRUESOME_GATEAU("gruesomeGateau", "Gruesome Gateau", "Anniversary"),
+    GHASTLY_GATEAU("4thAnniversary", "Ghastly Gateau", "Anniversary"),
     SURVIVOR_PUDDING("survivorPudding", "Survivor Pudding", "Anniversary"),
     BONE_SPLINTER("boneSplinter", "Bone Splinter", "Cannibal"),
     BLACK_SPLINTER("blackSplinter", "Black Splinter", "DLC2"),
@@ -106,7 +107,8 @@ public enum Offering implements Icon {
     RED_MONEY_PACKET("redMoneyPacket", "Red Money Packet", "LunarNewYear"),
     HAWKINS_NATIONAL_LABORATORY_ID("hawkinsNationalLaboratoryID", "Hawkins National Laboratory ID", "Qatar"),
     BBQ_INVITATION("bbqInvitation", "Bbq Invitation", "Summer"),
-    DUSTY_NOOSE("dustyNoose", "Dusty Noose", "Ukraine");
+    DUSTY_NOOSE("dustyNoose", "Dusty Noose", "Ukraine"),
+    MARYS_LETTER("marysLetter", "Mary's Letter", "Wales");
 
     private final String name;
     private final String subFolder;

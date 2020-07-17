@@ -83,8 +83,9 @@ public class PackMeta {
         }
         if (i != 0)
             return new PackMeta(folder.getName(), missingIcons);
-        logger.debug("Directory '{}' contained 0 recognizable icons w/ formatted directories and file names.",
+        logger.warn("Directory '{}' contained 0 recognizable icons w/ formatted directories and file names.",
                 folder.getName());
+        logger.info("Tip: Your main folder should contain sub-folders such as: Actions, Perks, Items, etc.");
         return null;
     }
 

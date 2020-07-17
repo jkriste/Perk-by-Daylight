@@ -48,7 +48,9 @@ public enum Portrait implements Icon {
     TR("TR", TRAPPER),
     UK("UK", "Ukraine", DEATHSLINGER),
     US("US", "Ukraine", ZARINA),
-    WR("WR", WRAITH);
+    WR("WR", WRAITH),
+    K20("K20", "Wales", EXECUTIONER),
+    S22("S22", "Wales", CHERYL);
 
     private final String name;
     private final String subFolder;

@@ -40,7 +40,7 @@ public final class LatestRelease {
         if (object.has("tag_name")) {
             String tag = object.get("tag_name").getAsString();
             logger.debug("tag_name JSON returned {}", tag);
-            return !tag.equalsIgnoreCase(PBD.VERSION);
+            //return !tag.equalsIgnoreCase(PBD.VERSION);
         }
         return false;
     }
@@ -81,11 +81,9 @@ public final class LatestRelease {
                 while ((length = in.read(buffer)) > 0) {
                     out.write(buffer, 0, length);
                     total += length;
-                    ui.update((double) total / (double) size);
                     logger.debug("Length read: {} / {}", total, size);
                 }
                 out.flush();
-                ui.update(-1D);
             }
         } catch (IOException e) {
             logger.warn("Failed to download new JAR: {}", e.getMessage());

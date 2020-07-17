@@ -5,127 +5,137 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="305.0" minWidth="300.0" prefHeight="305.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dev.glitchedcode.pbd.gui.controller.PreferenceController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="305.0" minWidth="300.0" prefHeight="305.0"
+            prefWidth="300.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="dev.glitchedcode.pbd.gui.controller.PreferenceController">
     <bottom>
         <GridPane BorderPane.alignment="CENTER">
             <columnConstraints>
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
             </columnConstraints>
             <rowConstraints>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
             </rowConstraints>
-            <children>
-                <Button cancelButton="true" mnemonicParsing="false" onAction="#onCancel" prefHeight="25.0" prefWidth="69.0" text="Cancel" GridPane.columnIndex="3" GridPane.halignment="RIGHT" />
-                <Button defaultButton="true" mnemonicParsing="false" onAction="#onSave" prefHeight="25.0" prefWidth="65.0" text="Save" GridPane.columnIndex="2" GridPane.halignment="CENTER" />
-            </children>
+            <Button cancelButton="true" mnemonicParsing="false" onAction="#onCancel" prefHeight="25.0" prefWidth="69.0"
+                    text="Cancel" GridPane.columnIndex="3" GridPane.halignment="RIGHT"/>
+            <Button defaultButton="true" mnemonicParsing="false" onAction="#onSave" prefHeight="25.0" prefWidth="65.0"
+                    text="Save" GridPane.columnIndex="2" GridPane.halignment="CENTER"/>
             <padding>
-                <Insets bottom="5.0" right="5.0" />
+                <Insets bottom="5.0" right="5.0"/>
             </padding>
         </GridPane>
     </bottom>
     <center>
         <GridPane prefHeight="230.0" prefWidth="300.0" BorderPane.alignment="CENTER">
             <columnConstraints>
-                <ColumnConstraints hgrow="SOMETIMES" maxWidth="232.0" minWidth="10.0" prefWidth="218.0" />
-                <ColumnConstraints hgrow="SOMETIMES" maxWidth="145.0" minWidth="10.0" prefWidth="82.0" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="232.0" minWidth="10.0" prefWidth="218.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="145.0" minWidth="10.0" prefWidth="82.0"/>
             </columnConstraints>
             <rowConstraints>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
             </rowConstraints>
-            <children>
-                <CheckBox fx:id="debugCheck" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.halignment="CENTER" />
-                <Label text="Debug Mode" GridPane.halignment="LEFT" GridPane.valignment="TOP">
-                    <font>
-                        <Font name="System Bold" size="12.0" />
-                    </font>
-                    <padding>
-                        <Insets left="5.0" top="5.0" />
-                    </padding>
-                </Label>
-                <Label text="No Color" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="TOP">
-                    <font>
-                        <Font name="System Bold" size="12.0" />
-                    </font>
-                    <GridPane.margin>
-                        <Insets left="5.0" top="5.0" />
-                    </GridPane.margin>
-                </Label>
-                <Label text="Sets whether the logger will output debug messages to the console." textFill="#8a8a8a" wrapText="true" GridPane.valignment="BOTTOM">
-                    <font>
-                        <Font name="System Italic" size="12.0" />
-                    </font>
-                    <padding>
-                        <Insets left="5.0" />
-                    </padding>
-                </Label>
-                <Spinner fx:id="statusSpinner" prefHeight="25.0" prefWidth="61.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="4" />
-                <CheckBox fx:id="noColorCheck" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
-                <Label text="Status Duration" GridPane.halignment="LEFT" GridPane.rowIndex="4" GridPane.valignment="TOP">
-                    <font>
-                        <Font name="System Bold" size="12.0" />
-                    </font>
-                    <padding>
-                        <Insets left="5.0" top="5.0" />
-                    </padding>
-                </Label>
-                <Label alignment="BOTTOM_LEFT" text="Sets whether the logger will output colored messages to the console." textFill="#8a8a8a" wrapText="true" GridPane.rowIndex="1" GridPane.valignment="BOTTOM">
-                    <padding>
-                        <Insets left="5.0" />
-                    </padding>
-                    <font>
-                        <Font name="System Italic" size="12.0" />
-                    </font>
-                </Label>
-                <Label text="Sets the duration that a message on the status bar will show until disappearing." textFill="#8a8a8a" wrapText="true" GridPane.rowIndex="4" GridPane.valignment="BOTTOM">
-                    <font>
-                        <Font name="System Italic" size="12.0" />
-                    </font>
-                    <padding>
-                        <Insets left="5.0" />
-                    </padding>
-                </Label>
-                <CheckBox fx:id="offlineCheck" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
-                <CheckBox fx:id="ignoreCheck" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="3" />
-                <Label text="Offline Mode" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="TOP">
-                    <padding>
-                        <Insets left="5.0" top="5.0" />
-                    </padding>
-                    <font>
-                        <Font name="System Bold" size="12.0" />
-                    </font>
-                </Label>
-                <Label text="Ignore Updates" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.valignment="TOP">
-                    <font>
-                        <Font name="System Bold" size="12.0" />
-                    </font>
-                    <padding>
-                        <Insets left="5.0" top="5.0" />
-                    </padding>
-                </Label>
-                <Label text="Sets whether the program will run in offline mode, will not check for updates." textFill="#8a8a8a" wrapText="true" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
-                    <padding>
-                        <Insets left="5.0" />
-                    </padding>
-                    <font>
-                        <Font name="System Italic" size="12.0" />
-                    </font>
-                </Label>
-                <Label text="Sets whether the program will ignore updates until the user checks for one." textFill="#8a8a8a" wrapText="true" GridPane.rowIndex="3" GridPane.valignment="BOTTOM">
-                    <GridPane.margin>
-                        <Insets left="5.0" />
-                    </GridPane.margin>
-                    <font>
-                        <Font name="System Italic" size="12.0" />
-                    </font>
-                </Label>
-            </children>
+            <CheckBox fx:id="debugCheck" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false"
+                      GridPane.columnIndex="1" GridPane.halignment="CENTER"/>
+            <Label text="Debug Mode" GridPane.halignment="LEFT" GridPane.valignment="TOP">
+                <font>
+                    <Font name="System Bold" size="12.0"/>
+                </font>
+                <padding>
+                    <Insets left="5.0" top="5.0"/>
+                </padding>
+            </Label>
+            <Label text="No Color" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                <font>
+                    <Font name="System Bold" size="12.0"/>
+                </font>
+                <GridPane.margin>
+                    <Insets left="5.0" top="5.0"/>
+                </GridPane.margin>
+            </Label>
+            <Label text="Sets whether the logger will output debug messages to the console." textFill="#8a8a8a"
+                   wrapText="true" GridPane.valignment="BOTTOM">
+                <font>
+                    <Font name="System Italic" size="12.0"/>
+                </font>
+                <padding>
+                    <Insets left="5.0"/>
+                </padding>
+            </Label>
+            <Spinner fx:id="statusSpinner" prefHeight="25.0" prefWidth="61.0" GridPane.columnIndex="1"
+                     GridPane.halignment="CENTER" GridPane.rowIndex="4"/>
+            <CheckBox fx:id="noColorCheck" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.halignment="CENTER"
+                      GridPane.rowIndex="1"/>
+            <Label text="Status Duration" GridPane.halignment="LEFT" GridPane.rowIndex="4" GridPane.valignment="TOP">
+                <font>
+                    <Font name="System Bold" size="12.0"/>
+                </font>
+                <padding>
+                    <Insets left="5.0" top="5.0"/>
+                </padding>
+            </Label>
+            <Label alignment="BOTTOM_LEFT" text="Sets whether the logger will output colored messages to the console."
+                   textFill="#8a8a8a" wrapText="true" GridPane.rowIndex="1" GridPane.valignment="BOTTOM">
+                <padding>
+                    <Insets left="5.0"/>
+                </padding>
+                <font>
+                    <Font name="System Italic" size="12.0"/>
+                </font>
+            </Label>
+            <Label text="Sets the duration that a message on the status bar will show until disappearing."
+                   textFill="#8a8a8a" wrapText="true" GridPane.rowIndex="4" GridPane.valignment="BOTTOM">
+                <font>
+                    <Font name="System Italic" size="12.0"/>
+                </font>
+                <padding>
+                    <Insets left="5.0"/>
+                </padding>
+            </Label>
+            <CheckBox fx:id="offlineCheck" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.halignment="CENTER"
+                      GridPane.rowIndex="2" GridPane.valignment="CENTER"/>
+            <CheckBox fx:id="ignoreCheck" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.halignment="CENTER"
+                      GridPane.rowIndex="3"/>
+            <Label text="Offline Mode" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="TOP">
+                <padding>
+                    <Insets left="5.0" top="5.0"/>
+                </padding>
+                <font>
+                    <Font name="System Bold" size="12.0"/>
+                </font>
+            </Label>
+            <Label text="Ignore Updates" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.valignment="TOP">
+                <font>
+                    <Font name="System Bold" size="12.0"/>
+                </font>
+                <padding>
+                    <Insets left="5.0" top="5.0"/>
+                </padding>
+            </Label>
+            <Label text="Sets whether the program will run in offline mode, will not check for updates."
+                   textFill="#8a8a8a" wrapText="true" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
+                <padding>
+                    <Insets left="5.0"/>
+                </padding>
+                <font>
+                    <Font name="System Italic" size="12.0"/>
+                </font>
+            </Label>
+            <Label text="Sets whether the program will ignore updates until the user checks for one." textFill="#8a8a8a"
+                   wrapText="true" GridPane.rowIndex="3" GridPane.valignment="BOTTOM">
+                <GridPane.margin>
+                    <Insets left="5.0"/>
+                </GridPane.margin>
+                <font>
+                    <Font name="System Italic" size="12.0"/>
+                </font>
+            </Label>
         </GridPane>
     </center>
 </BorderPane>

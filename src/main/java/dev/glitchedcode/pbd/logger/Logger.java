@@ -195,9 +195,10 @@ public class Logger {
 
     public void close() {
         if (isOpen()) {
-            if (errCount.get() > 0 || warnCount.get() > 0)
+            if (errCount.get() > 0 || warnCount.get() > 0) {
                 warn(Ansi.Color.YELLOW, "Finished with {} error(s) and {} warning(s).", errCount.get(), warnCount.get());
-            else
+                info("Report bugs and issues here: https://github.com/glitchedcoder/Perk-by-Daylight/issues/new/choose");
+            } else
                 info(Ansi.Color.GREEN, "Finished with {} error(s) and {} warning(s).", errCount.get(), warnCount.get());
             this.writer.flush();
             this.writer.close();

@@ -434,7 +434,27 @@ public enum Addon implements Icon {
     SPIT_POLISH_RAG("spitPolishRag", "Spit Polish Rag", "Ukraine", DEATHSLINGER),
     TIN_OIL_CAN("tinOilCan", "Tin Oil Can", "Ukraine", DEATHSLINGER),
     WANTED_POSTER("wantedPoster", "Wanted Poster", "Ukraine", DEATHSLINGER),
-    WARDENS_KEYS("wardensKeys", "Warden's Keys", "Ukraine", DEATHSLINGER);
+    WARDENS_KEYS("wardensKeys", "Warden's Keys", "Ukraine", DEATHSLINGER),
+    BLACK_STRAP("blackStrap", "Black Strap", "Wales", EXECUTIONER),
+    BURNING_MAN_PAINTING("burningManPainting", "Burning Man Painting", "Wales", EXECUTIONER),
+    CINDERELLA_MUSIC_BOX("cinderellaMusicBox", "Cinderella Music Box", "Wales", EXECUTIONER),
+    COPPER_RING("copperRing", "Copper Ring", "Wales", EXECUTIONER),
+    CRIMSON_CEREMONY_BOOK("crimsonCeremonyBook", "Crimson Ceremony Book", "Wales", EXECUTIONER),
+    DEAD_BUTTERFLY("deadButterfly", "Dead Butterfly", "Wales", EXECUTIONER),
+    FORGOTTEN_VIDEO_TAPE("forgottenVideoTape", "Forgotten Video Tape", "Wales", EXECUTIONER),
+    IRIDESCENT_SEAL_2("iridescentSeal", "Iridescent Seal", "Wales", EXECUTIONER),
+    LEAD_RING("leadRing", "Lead Ring", "Wales", EXECUTIONER),
+    LEOPARD_PRINT_FABRIC("leopardPrintFabric", "Leopard Print Frabric", "Wales", EXECUTIONER),
+    LOST_MEMORIES_BOOK("lostMemoriesBook", "Lost Memories Book", "Wales", EXECUTIONER),
+    MANNEQUIN_FOOT("mannequinFoot", "Mannequin Foot", "Wales", EXECUTIONER),
+    MISTY_DAY("mistyDay", "Misty Day", "Wales", EXECUTIONER),
+    OBSIDIAN_GOBLET("obsidianGoblet", "Obsidian Goblet", "Wales", EXECUTIONER),
+    RUST_COLORED_EGG("rustColoredEgg", "Rust Colored Egg", "Wales", EXECUTIONER),
+    SCARLET_EGG("scarletEgg", "Scarlet Egg", "Wales", EXECUTIONER),
+    SPEARHEAD("spearhead", "Spearhead", "Wales", EXECUTIONER),
+    TABLET_OF_THE_OPPRESSOR("tabletOfTheOppressor", "Tablet of the Oppressor", "Wales", EXECUTIONER),
+    VALTIEL_SECT_PHOTOGRAPH("valtielSectPhotograph", "Valtiel Sect. Photograph", "Wales", EXECUTIONER),
+    WAX_DOLL("waxDoll", "Wax Doll", "Wales", EXECUTIONER);
 
     private final String name;
     private final String subFolder;

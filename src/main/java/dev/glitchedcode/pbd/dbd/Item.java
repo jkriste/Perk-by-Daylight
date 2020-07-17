@@ -7,6 +7,8 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public enum Item implements Icon {
 
     PARTY_POPPER("partyPopper", "Party Popper", "Anniversary"),
+    ANNIVERSARY_FLASHLIHGT("flashlight_anniversary2020", "Anniversary Flashlight", "Anniversary"),
+    ANNIVERSARY_AID_KIT("medkit_anniversary2020", "Anniversary Aid Kit", "Anniversary"),
     FLASHLIGHT_HALLOWEEN("flashlightHalloween", "Flashlight Halloween", "Halloween"),
     MEDKIT_HALLOWEEN("medkitHalloween", "Medkit Halloween", "Halloween"),
     BROKEN_KEY("brokenKey", "Broken Key"),

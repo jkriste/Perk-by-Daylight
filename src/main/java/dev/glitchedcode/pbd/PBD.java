@@ -12,8 +12,10 @@ import dev.glitchedcode.pbd.dbd.Portrait;
 import dev.glitchedcode.pbd.gui.Icon;
 import dev.glitchedcode.pbd.gui.controller.MainController;
 import dev.glitchedcode.pbd.json.Config;
+import dev.glitchedcode.pbd.json.Latest;
 import dev.glitchedcode.pbd.logger.Logger;
 import dev.glitchedcode.pbd.pack.IconPack;
+import dev.glitchedcode.pbd.util.Files;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -90,13 +92,13 @@ public class PBD extends Application {
      */
     public static final File PROGRAM_FILES_86_DIR;
     /**
-     * The current version of this program.
-     */
-    public static final String VERSION = "v0.0.1-BETA";
-    /**
      * A convenient way to access all icons.
      */
     private static Set<dev.glitchedcode.pbd.dbd.Icon> ICONS;
+    /**
+     * The current version of this program.
+     */
+    public static final Latest.Version VERSION = new Latest.Version(0, 1, 0);
     /**
      * Used to schedule async tasks.
      */
@@ -164,7 +166,6 @@ public class PBD extends Application {
         IconPack.saveAll();
         LOGGER.debug("Saved all icon packs.");
         saveConfig();
-        LOGGER.debug("Saved config...closing logger.");
         LOGGER.close();
         SERVICE.shutdown();
         try {
@@ -338,7 +339,9 @@ public class PBD extends Application {
      */
     public static String formatStackTrace(@Nonnull Throwable throwable) {
         StringBuilder builder = new StringBuilder();
+        boolean first = true;
         do {
+            builder.append(first ? "" : "Caused by:");
             builder.append(throwable.getClass().getName());
             builder.append(": ");
             builder.append(throwable.getMessage());
@@ -353,6 +356,7 @@ public class PBD extends Application {
                 builder.append(element.isNativeMethod() ? " (native method)\n" : "\n");
             }
             builder.append("\n");
+            first = false;
         } while ((throwable = throwable.getCause()) != null);
         return builder.toString();
     }
@@ -462,8 +466,13 @@ public class PBD extends Application {
             for (File file : files) {
                 if (IconPack.of(file) == null) {
                     LOGGER.warn("File/directory '{}' could not be determined" +
-                            " as an icon pack, deleting on exit.", file.getName());
-                    file.deleteOnExit();
+                            " as an icon pack, deleting...", file.getName());
+                    try {
+                        Files.deleteAll(file, true);
+                    } catch (IOException e) {
+                        LOGGER.warn("Failed to delete file '{}': {}", file.getAbsolutePath(), e.getMessage());
+                        LOGGER.handleError(Thread.currentThread(), e);
+                    }
                 }
             }
         }
@@ -549,7 +558,6 @@ public class PBD extends Application {
         primaryStage.setTitle("Perk by Daylight " + PBD.VERSION);
         primaryStage.setOnHidden(event -> close(0));
         primaryStage.setScene(new Scene(parent));
-        primaryStage.setAlwaysOnTop(true);
         primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/pic/pbd_icon.png")));
         controller.setMode(CONFIG.isDarkMode());
         primaryStage.show();

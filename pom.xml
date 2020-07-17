@@ -6,7 +6,11 @@
 
     <groupId>dev.glitchedcode</groupId>
     <artifactId>PerkByDaylight</artifactId>
-    <version>0.0.1-BETA</version>
+    <version>0.1.0-BETA</version>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
     <dependencies>
         <!-- Jansi -->
