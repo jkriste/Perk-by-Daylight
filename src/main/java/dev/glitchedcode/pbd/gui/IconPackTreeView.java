@@ -7,6 +7,8 @@ import dev.glitchedcode.pbd.dbd.Item;
 import dev.glitchedcode.pbd.dbd.Offering;
 import dev.glitchedcode.pbd.dbd.Perk;
 import dev.glitchedcode.pbd.dbd.Portrait;
+import dev.glitchedcode.pbd.dbd.Power;
+import dev.glitchedcode.pbd.dbd.StatusEffect;
 import dev.glitchedcode.pbd.logger.Logger;
 import dev.glitchedcode.pbd.pack.IconPack;
 import dev.glitchedcode.pbd.pack.PackMeta;
@@ -16,7 +18,7 @@ import javax.annotation.Nonnull;
 
 public class IconPackTreeView extends TreeItem<String> {
 
-    private transient IconPack iconPack;
+    private final IconPack iconPack;
     private static final transient Logger logger = PBD.getLogger();
 
     @SuppressWarnings("unchecked")
@@ -60,7 +62,27 @@ public class IconPackTreeView extends TreeItem<String> {
                 continue;
             items.getChildren().add(new TreeItem<>(item.getProperName()));
         }
-        getChildren().addAll(perks, addons, portraits, offerings, actions, items);
+        TreeItem<String> statusEffects = new TreeItem<>("Status Effects");
+        for (StatusEffect s : StatusEffect.VALUES) {
+            if (meta.isMissingIcon(s))
+                continue;
+            statusEffects.getChildren().add(new TreeItem<>(s.getProperName()));
+        }
+        TreeItem<String> powers = new TreeItem<>("Powers");
+        for (Power p : Power.VALUES) {
+            if (meta.isMissingIcon(p))
+                continue;
+            powers.getChildren().add(new TreeItem<>(p.getProperName()));
+        }
+        getChildren().addAll(
+                perks,
+                addons,
+                portraits,
+                offerings,
+                actions,
+                items,
+                statusEffects,
+                powers);
     }
 
     @Nonnull

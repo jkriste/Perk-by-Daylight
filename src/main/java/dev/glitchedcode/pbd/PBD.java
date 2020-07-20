@@ -9,6 +9,8 @@ import dev.glitchedcode.pbd.dbd.Item;
 import dev.glitchedcode.pbd.dbd.Offering;
 import dev.glitchedcode.pbd.dbd.Perk;
 import dev.glitchedcode.pbd.dbd.Portrait;
+import dev.glitchedcode.pbd.dbd.Power;
+import dev.glitchedcode.pbd.dbd.StatusEffect;
 import dev.glitchedcode.pbd.gui.Icon;
 import dev.glitchedcode.pbd.gui.controller.MainController;
 import dev.glitchedcode.pbd.json.Config;
@@ -150,6 +152,9 @@ public class PBD extends Application {
         Thread.setDefaultUncaughtExceptionHandler(getExceptionHandler());
         // Set up all additional files & folders.
         setupFiles();
+        // TODO: Custom dialog box for clearing error logs, logs, and temp cache w/ a "do not show again" checkbox.
+        // TODO: make logs individual and with a .log filetype
+        // TODO: make error logs also have a .errlog filetype
         // Launch the application
         launch(args);
     }
@@ -390,6 +395,8 @@ public class PBD extends Application {
         Collections.addAll(icons, Offering.VALUES);
         Collections.addAll(icons, dev.glitchedcode.pbd.dbd.Action.VALUES);
         Collections.addAll(icons, Item.VALUES);
+        Collections.addAll(icons, StatusEffect.VALUES);
+        Collections.addAll(icons, Power.VALUES);
         ICONS = icons;
         return icons;
     }
@@ -561,51 +568,5 @@ public class PBD extends Application {
         primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/pic/pbd_icon.png")));
         controller.setMode(CONFIG.isDarkMode());
         primaryStage.show();
-    }
-
-    private static String buildOfferingsEnum(@Nonnull File[] files, @Nullable String dirName) {
-        StringBuilder builder = new StringBuilder();
-        for (File file : files) {
-            if (file.isDirectory()) {
-                File[] files1 = file.listFiles();
-                assert (files1 != null);
-                builder.append(buildOfferingsEnum(files1, file.getName()));
-                continue;
-            }
-            System.out.println(file.getName());
-            String name = file.getName().replaceFirst("iconItems_", "").replaceFirst(".png", "");
-            String enumName = CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, name);
-            builder.append(enumName)
-                    .append("(\"")
-                    .append(name)
-                    .append("\", ")
-                    .append("\"")
-                    .append(toTitleCase(enumName.replace('_', ' ')))
-                    .append(dirName != null ? ("\", \"" + dirName + "\"") : "\"")
-                    .append("),\n");
-        }
-        builder.append(";");
-        return builder.toString();
-    }
-
-    private static String toTitleCase(@Nonnull String s) {
-        if (s.isEmpty()) {
-            return "";
-        }
-
-        if (s.length() == 1) {
-            return s.toUpperCase();
-        }
-
-        StringBuilder resultPlaceHolder = new StringBuilder(s.length());
-
-        Stream.of(s.split(" ")).forEach(stringPart -> {
-            char[] charArray = stringPart.toLowerCase().toCharArray();
-            charArray[0] = Character.toUpperCase(charArray[0]);
-            resultPlaceHolder.append(new String(charArray)).append(" ");
-        });
-
-
-        return resultPlaceHolder.toString().trim();
     }
 }

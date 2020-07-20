@@ -66,7 +66,13 @@ public final class Files {
                 throw new IOException("Could not create directory '" + to.getAbsolutePath() + "'.");
             return to;
         }
-        to = new File(to, from.getName());
+        if (to.isDirectory() && !from.isDirectory()) {
+            if (!to.exists()) {
+                if (!to.mkdirs())
+                    throw new IOException("Could not create directory '" + to.getAbsolutePath());
+            }
+            to = new File(to, from.getName());
+        }
         File parent = to.getParentFile();
         if (!parent.exists()) {
             if (!parent.mkdirs())

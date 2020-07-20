@@ -37,6 +37,11 @@ public class UnzipTask extends Task<File> {
             int current = 0;
             while ((entry = in.getNextEntry()) != null) {
                 File file = new File(PBD.getTempDir(), entry.getName());
+                File parent = file.getParentFile();
+                if (!parent.exists()) {
+                    if (!parent.mkdirs())
+                        throw new IOException("Failed to create parent dir '" + parent.getAbsolutePath() + "'");
+                }
                 if (file.getName().indexOf('.') != -1) {
                     if (file.createNewFile())
                         extract(in, file);

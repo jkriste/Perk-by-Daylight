@@ -44,6 +44,8 @@ public class IconInstallTask extends Task<Void> {
         for (Icon icon : PBD.getIcons()) {
             if (meta.isMissingIcon(icon))
                 continue;
+            logger.debug("{}", icon.asFile(pack.getFolder()).getAbsolutePath());
+            logger.debug("{}", icon.asFile(PBD.getIconsDir()).getAbsolutePath());
             Files.copy(icon.asFile(pack.getFolder()), icon.asFile(PBD.getIconsDir()));
             current++;
             updateProgress(current, max);

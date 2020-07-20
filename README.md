@@ -26,17 +26,11 @@ Inspired by [the subreddit with the same name](https://www.reddit.com/r/PerkByDa
 
 ### Running
 
+To download Perk by Daylight, either go to the `Releases` tab on the right side of the screen or click [this link](https://github.com/glitchedcoder/Perk-by-Daylight/releases). Go to the latest version, optionally review the release notes, click `Assets`, and then click `PerkByDaylight.jar`.
+
 Generally, most [releases](https://github.com/glitchedcoder/Perk-by-Daylight/releases) will also be shipped with a `run.bat` file.
 This is a batch file that will run the program via the Command Line or whatever terminal you may have installed.
-The `.JAR` file is not executable, so it must be ran with `java -jar FILENAME.jar [optional arguments]` or `run.bat`.
-
-### Optional Command Arguments
-
-There are a list of arguments that is acceptable for Perk by Daylight.
-* `-debug` This will output optional dialog to the console and is often used to "debug" the program. Very verbose.
-* `-nocolor` This will disable coloring on the console and will make it harder to read. Perk by Daylight uses Jansi to output color and works with Windows Command Prompt.
-
-*Note: These optional command arguments have been moved to the config file and will no longer work next pre-release.*
+The `.JAR` file is not executable, so it must be ran with `java -jar PerkByDaylight.jar` or double-clicking the `run.bat` file.
 
 ## About
 
@@ -75,9 +69,10 @@ That's it!
 * A built-in dialog box for those who want to donate.
 * Lots of documentation that needs to be added.
 * Updating an old icon with a new icon.
-* The ability to identify if a user is offline, so checking for an update doesn't throw an error.
+* Logs being created and stored individually once per run, in its own `logs` folder.
+* 
 
-*Might be Added*
+*Might\* be Added*
 * The support for `.rar` files. This might not be possible since RAR files are proprietary and libraries like [JUnRAR](https://github.com/junrar/junrar) do not support WinRAR-compressed files.
 * A workshop for uploading, downloading, and viewing existing icon packs created by the Perk-by-Daylight community.
 * More themes. See FAQ.
@@ -116,7 +111,7 @@ Dependencies are automatically packed into the `.JAR` file and do not need to be
 
 **How can I be sure this isn't a hack?**
 
-The full project, including the code and other resources, is open-sourced and is available for anyone to fork and modify to their heart's desire long as they stick to the [license](https://github.com/glitchedcoder/Perk-by-Daylight/blob/master/LICENSE.md). If you have questions about the what the code does or any other resources in this project, feel free to send me an e-mail at `glitchedcoder@gmail.com`.
+The full project, including the code and other resources, is open-sourced and is available for anyone to fork and modify to their heart's desire long as they stick to the [license](https://github.com/glitchedcoder/Perk-by-Daylight/blob/master/LICENSE.md). If you have questions about the what the code does or any other resources in this project, feel free to create an issue or send me an email at `glitchedcoder[at]gmail.com`.
 
 **Where does the liability fall if someone were to be falsely banned?**
 
@@ -124,7 +119,7 @@ I have to be quite frank by saying that I do not take liability for the false ba
 
 **When will [insert feature] be added?**
 
-I makes updates to this program on my own time and currently do not have a team of other developers working for me. If you have a feature that hasn't been previously suggested, feel free to create a feature request [here](https://github.com/glitchedcoder/Perk-by-Daylight/issues/new?assignees=glitchedcoder&labels=enhancement&template=feature_request.md&title=%5BFEATURE%5D).
+I make updates to this program on my own time and currently do not have a team of other developers working for me. If you have a feature that hasn't been previously suggested, feel free to create a feature request [here](https://github.com/glitchedcoder/Perk-by-Daylight/issues/new?assignees=glitchedcoder&labels=enhancement&template=feature_request.md&title=%5BFEATURE%5D).
 
 **Where can I report a bug or error I've come across?**
 

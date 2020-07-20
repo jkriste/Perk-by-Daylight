@@ -31,7 +31,7 @@ public class ErrorLog {
             if (log.createNewFile())
                 logger.debug("Created error log \"" + log.getName() + "\".");
             BetterPrintWriter writer = new BetterPrintWriter(new BufferedWriter(new FileWriter(log, false)));
-            Stream.of("Error log of PerkByDaylight " + PBD.VERSION,
+            Stream.of("Error log of Perk by Daylight " + PBD.VERSION,
                     "// Here we go again :(",
                     "",
                     "Please report bugs and issues here: https://github.com/glitchedcoder/Perk-by-Daylight/issues/new/choose",

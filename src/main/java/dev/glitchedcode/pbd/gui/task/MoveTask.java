@@ -51,6 +51,7 @@ public class MoveTask extends Task<File> {
             else
                 java.nio.file.Files.delete(f.toPath());
         }
+        java.nio.file.Files.delete(from.toPath());
         logger.info("{} file(s) moved from '{}' to '{}'.", copied, from.getAbsolutePath(), to.getAbsolutePath());
         return to;
     }
