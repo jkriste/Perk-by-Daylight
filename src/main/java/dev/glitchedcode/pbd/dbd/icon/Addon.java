@@ -1,4 +1,7 @@
-package dev.glitchedcode.pbd.dbd;
+package dev.glitchedcode.pbd.dbd.icon;
+
+import dev.glitchedcode.pbd.dbd.Character;
+import dev.glitchedcode.pbd.dbd.Killer;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -61,10 +64,10 @@ public enum Addon implements Icon {
     WILLOW_WREATH("willowWreath", "Willow Wreath", "DLC3", HAG),
     CALM_CARTERS_NOTES("calmCartersNotes", "Calm Carter's Notes", "DLC4", DOCTOR),
     CALM_CLASS_I("calmClassI", "Calm Class I", "DLC4", DOCTOR),
-    CALM_CLASS_I_I("calmClassII", "Calm Class II", "DLC4", DOCTOR),
+    CALM_CLASS_II("calmClassII", "Calm Class II", "DLC4", DOCTOR),
     DICIPLINE_CARTERS_NOTES("diciplineCartersNotes", "Dicipline Carter's Notes", "DLC4", DOCTOR),
-    DICIPLINE_CLASS_I_I("diciplineClassII", "Dicipline Class II", "DLC4", DOCTOR),
-    DICIPLINE_CLASS_I_I_I("diciplineClassIII", "Dicipline Class III", "DLC4", DOCTOR),
+    DICIPLINE_CLASS_II("diciplineClassII", "Dicipline Class II", "DLC4", DOCTOR),
+    DICIPLINE_CLASS_III("diciplineClassIII", "Dicipline Class III", "DLC4", DOCTOR),
     HIGH_STIMULUS_ELECTRODE("highStimulusElectrode", "High Stimulus Electrode", "DLC4", DOCTOR),
     INTERVIEW_TAPE("interviewTape", "Interview Tape", "DLC4", DOCTOR),
     IRIDESCENT_KING("iridescentKing", "Iridescent King", "DLC4", DOCTOR),
@@ -74,11 +77,11 @@ public enum Addon implements Icon {
     OBEDIENCE_CARTERS_NOTES("obedienceCartersNotes", "Obedience Carter's Notes", "DLC4", DOCTOR),
     ORDER_CARTERS_NOTES("orderCartersNotes", "Order Carter's Notes", "DLC4", DOCTOR),
     ORDER_CLASS_I("orderClassI", "Order Class I", "DLC4", DOCTOR),
-    ORDER_CLASS_I_I("orderClassII", "Order Class II", "DLC4", DOCTOR),
+    ORDER_CLASS_II("orderClassII", "Order Class II", "DLC4", DOCTOR),
     POLISHED_ELECTRODE("polishedElectrode", "Polished Electrode", "DLC4", DOCTOR),
     RESTRAINT_CARTERS_NOTES("restraintCartersNotes", "Restraint Carters Notes", "DLC4", DOCTOR),
-    RESTRAINT_CLASS_I_I("restraintClassII", "Restraint Class II", "DLC4", DOCTOR),
-    RESTRAINT_CLASS_I_I_I("restraintClassIII", "Restraint Class III", "DLC4", DOCTOR),
+    RESTRAINT_CLASS_II("restraintClassII", "Restraint Class II", "DLC4", DOCTOR),
+    RESTRAINT_CLASS_III("restraintClassIII", "Restraint Class III", "DLC4", DOCTOR),
     SCRAPPED_TAPE("scrappedTape", "Scrapped Tape", "DLC4", DOCTOR),
     AMANITA_TOXIN("amanitaToxin", "Amanita Toxin", "DLC5", HUNTRESS),
     BANDAGED_HAFT("bandagedHaft", "Bandaged Haft", "DLC5", HUNTRESS),
@@ -460,7 +463,6 @@ public enum Addon implements Icon {
     private final String subFolder;
     private final String properName;
     private final Character character;
-    public static final Addon[] VALUES = values();
     public static final Set<Addon> GENERIC_ADDONS;
     public static final Map<Killer, Set<Addon>> KILLER_LOOKUP;
 
@@ -469,7 +471,7 @@ public enum Addon implements Icon {
         Map<Killer, Set<Addon>> lookup = new EnumMap<>(Killer.class);
         for (Killer killer : Killer.values()) {
             Set<Addon> addons = new HashSet<>();
-            for (Addon addon : VALUES) {
+            for (Addon addon : values()) {
                 Character c = addon.getCharacter();
                 if (c != null) {
                     if (c.getName().equalsIgnoreCase(killer.getName()))
@@ -506,6 +508,12 @@ public enum Addon implements Icon {
 
     @Nonnull
     @Override
+    public IconCategory getCategory() {
+        return IconCategory.ADDON;
+    }
+
+    @Nonnull
+    @Override
     public String getName() {
         return name;
     }
@@ -537,33 +545,5 @@ public enum Addon implements Icon {
     @Nonnull
     public static Set<Addon> getAddons(@Nonnull Killer killer) {
         return KILLER_LOOKUP.get(killer);
-    }
-
-    @Nullable
-    public static Addon fromName(@Nonnull String name) {
-        for (Addon addon : VALUES) {
-            if (addon.name.equalsIgnoreCase(name))
-                return addon;
-        }
-        return null;
-    }
-
-    @Nonnull
-    @ParametersAreNonnullByDefault
-    public static Addon fromName(String name, Addon defaultVal) {
-        for (Addon addon : VALUES) {
-            if (addon.name.equalsIgnoreCase(name))
-                return addon;
-        }
-        return defaultVal;
-    }
-
-    @Nullable
-    public static Addon fromProperName(@Nonnull String properName) {
-        for (Addon addon : VALUES) {
-            if (addon.properName.equalsIgnoreCase(properName))
-                return addon;
-        }
-        return null;
     }
 }

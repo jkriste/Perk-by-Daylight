@@ -6,6 +6,7 @@ import com.google.gson.stream.JsonWriter;
 import dev.glitchedcode.pbd.PBD;
 import dev.glitchedcode.pbd.gui.IconPackTreeView;
 import dev.glitchedcode.pbd.logger.Logger;
+import javafx.scene.control.TreeItem;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -24,7 +25,8 @@ public class IconPack {
     private final int id;
     private final File folder;
     private final PackMeta meta;
-    private IconPackTreeView tree;
+    private TreeItem<String> icons;
+    private TreeItem<String> missingIcons;
     private static final AtomicInteger ID_GEN;
     private static final List<IconPack> packs;
     private static final Logger logger = PBD.getLogger();
@@ -38,7 +40,8 @@ public class IconPack {
         this.id = ID_GEN.getAndIncrement();
         this.folder = folder;
         this.meta = meta;
-        this.tree = new IconPackTreeView(this);
+        this.icons = IconPackTreeView.of(this);
+        this.missingIcons = IconPackTreeView.ofMissing(this);
         packs.add(this);
         logger.debug("Icon pack '{}' assigned internal id {}", meta.getName(), id);
     }
@@ -55,8 +58,12 @@ public class IconPack {
         return meta;
     }
 
-    public IconPackTreeView getTree() {
-        return tree;
+    public TreeItem<String> getIcons() {
+        return icons;
+    }
+
+    public TreeItem<String> getMissingIcons() {
+        return missingIcons;
     }
 
     public void save() throws IOException {
@@ -81,7 +88,8 @@ public class IconPack {
             return false;
         }
         this.meta.reeval(folder);
-        this.tree = new IconPackTreeView(this);
+        this.icons = IconPackTreeView.of(this);
+        this.missingIcons = IconPackTreeView.ofMissing(this);
         return true;
     }
 
@@ -92,7 +100,7 @@ public class IconPack {
 
     public void setName(@Nonnull String name) {
         this.meta.setName(name);
-        this.tree.setValue(name);
+        this.icons.setValue(name);
     }
 
     public static void saveAll() {

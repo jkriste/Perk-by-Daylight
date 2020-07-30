@@ -1,7 +1,8 @@
 package dev.glitchedcode.pbd.gui.controller;
 
 import dev.glitchedcode.pbd.PBD;
-import dev.glitchedcode.pbd.dbd.Icon;
+import dev.glitchedcode.pbd.dbd.icon.Icon;
+import dev.glitchedcode.pbd.gui.task.CacheDeletionTask;
 import dev.glitchedcode.pbd.gui.task.CopyTask;
 import dev.glitchedcode.pbd.gui.task.DeleteTask;
 import dev.glitchedcode.pbd.gui.task.IconInstallTask;
@@ -55,6 +56,7 @@ public class MainController implements Initializable {
     @FXML private Label status;
     @FXML private Menu iconMenu;
     @FXML private MenuBar menuBar;
+    @FXML private MenuItem packInfoMenu;
     @FXML private ImageView iconDisplay;
     @FXML private CheckMenuItem darkMode;
     @FXML private ProgressBar progressBar;
@@ -102,6 +104,7 @@ public class MainController implements Initializable {
         progressBar.setVisible(false);
         deleteIconPack.setVisible(false);
         installIconPack.setVisible(false);
+        packInfoMenu.setVisible(false);
         constructIconPacks();
         // Makes the icon pack list editable.
         packList.setEditable(true);
@@ -122,6 +125,7 @@ public class MainController implements Initializable {
             stage.setAlwaysOnTop(true);
             stage.initStyle(StageStyle.UNIFIED);
             stage.setTitle("Preferences");
+            stage.setResizable(false);
             stage.getIcons().add(new Image(PBD.class.getResourceAsStream("/pic/pbd_icon.png")));
             if (CONFIG.isDarkMode())
                 stage.getScene().getStylesheets().add(darkTheme.toExternalForm());
@@ -155,27 +159,19 @@ public class MainController implements Initializable {
     }
 
     /**
-     * Called when the "Delete Temp Contents" menu item is clicked.
+     * Called when the "Delete Cache" menu item is clicked.
      */
     @FXML
-    public void onDeleteTempContents() {
-        File[] files = PBD.getTempDir().listFiles();
-        if (files == null || files.length == 0) {
-            setStatus("No files were found in the 'temp' folder.", Type.NONE);
-            return;
-        }
-        setStatus("Deleting contents in 'temp' folder...", Type.NONE);
-        progressBar.setVisible(true);
-        setDisabled(true);
-        DeleteTask task = new DeleteTask(PBD.getTempDir(), false);
-        progressBar.progressProperty().bind(task.progressProperty());
+    public void onDeleteCache() {
+        setStatus("Deleting cached files...", Type.NONE);
+        CacheDeletionTask task = new CacheDeletionTask();
         task.setOnSucceeded(e -> {
             try {
                 setDisabled(false);
                 progressBar.setVisible(false);
-                setStatus("Deleted " + task.get() + " file(s) in 'temp' folder.", Type.NONE);
+                setStatus("Deleted " + task.get() + " cached file(s).", Type.NONE);
             } catch (InterruptedException | ExecutionException ex) {
-                logger.warn("Failed to get int from DeleteTask: {}", ex.getMessage());
+                logger.warn("CacheDeletionTask failed: {}", ex.getMessage());
                 logger.handleError(Thread.currentThread(), ex);
             }
         });
@@ -224,10 +220,7 @@ public class MainController implements Initializable {
             return;
         }
         UnzipTask task = new UnzipTask(file);
-        progressBar.progressProperty().bind(task.progressProperty());
         setStatus("Unzipping '" + file.getName() + "'...", Type.NONE);
-        setDisabled(true);
-        progressBar.setVisible(true);
         task.setOnSucceeded(event -> {
             try {
                 File newDir = task.get();
@@ -258,10 +251,7 @@ public class MainController implements Initializable {
             return;
         }
         CopyTask task = new CopyTask(file, new File(PBD.getTempDir(), file.getName()));
-        progressBar.progressProperty().bind(task.progressProperty());
         setStatus("Copying '" + file.getName() + "' to 'temp' directory.", Type.NONE);
-        setDisabled(true);
-        progressBar.setVisible(true);
         task.setOnSucceeded(event -> {
             try {
                 File newDir = task.get();
@@ -273,6 +263,35 @@ public class MainController implements Initializable {
             }
         });
         setupTask("Icon Pack File Copier", task);
+    }
+
+    @FXML
+    public void onPackInfo() {
+        String name = packList.getSelectionModel().getSelectedItem();
+        IconPack pack = IconPack.fromName(name);
+        if (pack == null)
+            return;
+        try {
+            FXMLLoader loader = new FXMLLoader(PBD.class.getResource("/form/IconPackInfoForm.fxml"));
+            Parent root = loader.load();
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root));
+            IconPackInfoController controller = loader.getController();
+            controller.setStage(stage);
+            controller.setIconPack(pack);
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setAlwaysOnTop(true);
+            stage.initStyle(StageStyle.UNIFIED);
+            stage.setTitle("'" + name + "' Pack Info");
+            stage.setResizable(false);
+            stage.getIcons().add(new Image(PBD.class.getResourceAsStream("/pic/pbd_icon.png")));
+            if (CONFIG.isDarkMode())
+                stage.getScene().getStylesheets().add(darkTheme.toExternalForm());
+            stage.show();
+        } catch (IOException e) {
+            logger.warn("Failed to open IconPackInfoForm.fxml: {}", e.getMessage());
+            logger.handleError(Thread.currentThread(), e);
+        }
     }
 
     /**
@@ -331,15 +350,19 @@ public class MainController implements Initializable {
                 constructIconPacks();
                 return;
             }
-            setDisabled(true);
             setStatus("Installing icon pack '" + name + "'...", Type.NONE);
             IconInstallTask task = new IconInstallTask(pack);
-            progressBar.progressProperty().bind(task.progressProperty());
-            progressBar.setVisible(true);
             task.setOnSucceeded(event -> {
-                progressBar.setVisible(false);
-                setDisabled(false);
-                setStatus("Successfully installed icon pack '" + pack.getMeta().getName() + "'.", Type.NONE);
+                try {
+                    logger.info("Successfully installed {} icon(s) from icon pack '{}'.",
+                            task.get(), name);
+                    progressBar.setVisible(false);
+                    setDisabled(false);
+                    setStatus("Successfully installed icon pack '" + pack.getMeta().getName() + "'.", Type.NONE);
+                } catch (InterruptedException | ExecutionException e) {
+                    logger.warn("Failed to install icon pack '{}': {}", name, e.getMessage());
+                    logger.handleError(Thread.currentThread(), e);
+                }
             });
             setupTask("Icon Pack Installer", task);
         }
@@ -362,12 +385,9 @@ public class MainController implements Initializable {
             setPerkTree(null);
             installIconPack.setVisible(false);
             deleteIconPack.setVisible(false);
-            setDisabled(true);
             File folder = pack.getFolder();
             pack.dispose();
             DeleteTask task = new DeleteTask(folder, true);
-            progressBar.progressProperty().bind(task.progressProperty());
-            progressBar.setVisible(true);
             task.setOnSucceeded(e -> {
                 setStatus("Deleted icon pack '" + name + "'.", Type.NONE);
                 constructIconPacks();
@@ -405,13 +425,14 @@ public class MainController implements Initializable {
                 setStatus("Encountered an error, check logs.", Type.ERROR);
                 return;
             }
-            Icon icon = PBD.getIcon(name);
+            Icon icon = PBD.getIconProper(name);
             if (icon != null)
                 iconDisplay.setImage(toImage(icon, pack));
             else
                 logger.warn("Couldn't find icon with name '{}'", name);
             iconMenu.setVisible(true);
-        }
+        } else
+            iconMenu.setVisible(false);
     }
 
     @FXML
@@ -424,8 +445,9 @@ public class MainController implements Initializable {
         logger.debug("Clicked on: {}", name);
         IconPack pack = IconPack.fromName(name);
         if (pack != null) {
-            installIconPack.setVisible(true);
-            deleteIconPack.setVisible(true);
+            packInfoMenu.setVisible(true);
+            installIconPack.setVisible(!name.equalsIgnoreCase(INSTALLED));
+            deleteIconPack.setVisible(!name.equalsIgnoreCase(INSTALLED));
             setPerkTree(pack);
         } else
             logger.warn("Failed to get icon pack with name '{}', selected via packList.", name);
@@ -464,7 +486,6 @@ public class MainController implements Initializable {
             throw new IllegalArgumentException("Given file '" + dir.getName() + "' is not directory.");
         if (PackMeta.eval(dir)) {
             MoveTask task = new MoveTask(dir, PBD.getPacksDir());
-            progressBar.progressProperty().bind(task.progressProperty());
             task.setOnSucceeded(event -> {
                 try {
                     IconPack pack = IconPack.of(task.get());
@@ -515,20 +536,26 @@ public class MainController implements Initializable {
             perkTree.setRoot(null);
             iconMenu.setVisible(false);
         } else
-            perkTree.setRoot(pack.getTree());
+            perkTree.setRoot(pack.getIcons());
         perkTree.refresh();
     }
 
     private void setupTask(@Nonnull String name, @Nonnull Task<?> task) {
         task.setOnFailed(event -> {
             Throwable throwable = task.getException();
-            if (throwable == null) {
+            if (throwable == null)
                 logger.error("Task '{}' failed but exception thrown is null.", name);
-                return;
+            else {
+                logger.warn("Encountered an exception whilst running task '{}': {}", name, throwable.getMessage());
+                logger.handleError(Thread.currentThread(), throwable);
             }
-            logger.warn("Encountered an exception whilst running task '{}': {}", name, throwable.getMessage());
-            logger.handleError(Thread.currentThread(), throwable);
+            progressBar.setVisible(false);
+            setDisabled(false);
+            setStatus("An error occurred during task '" + name + "', check logs.", Type.ERROR);
         });
+        progressBar.progressProperty().bind(task.progressProperty());
+        progressBar.setVisible(true);
+        setDisabled(true);
         Thread thread = new Thread(task);
         thread.setName(name);
         thread.start();
@@ -545,7 +572,7 @@ public class MainController implements Initializable {
             if (pack.refresh()) {
                 logger.warn("Failed to get JavaFX Image from icon '{}' in pack '{}': {}",
                         icon.getProperName(), pack.getMeta().getName(), e.getMessage());
-                setStatus("Encountered an error, check logs.", Type.ERROR);
+                setStatus("Encountered an error fetching image, check logs.", Type.ERROR);
                 logger.handleError(Thread.currentThread(), e);
             } else {
                 setPerkTree(null);

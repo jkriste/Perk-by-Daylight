@@ -1,7 +1,7 @@
 ---
-name: Bug report
-about: Create a bug report here.
-title: "[BUG] "
+name: Bug/error report
+about: Create a bug or error report here.
+title: "[BUG/ERROR] "
 labels: bug
 assignees: glitchedcoder
 
@@ -24,10 +24,10 @@ A clear and concise description of what you expected to happen.
 If applicable, add screenshots to help explain your problem.
 
 **Error Log**
-If applicable, add all text to the error log to the post or create a pastebin (link here: https://pastebin.com/) and attach the link.
+(Yes/No - If yes, please attach the error log by going to "Open PBD Folder -> error logs")
 
-**Desktop (please complete the following information):**
- - Version [e.g. 22]
+**Version**
+ - v[e.g. 1.2.3]
 
 **Additional context**
 Add any other context about the problem here.

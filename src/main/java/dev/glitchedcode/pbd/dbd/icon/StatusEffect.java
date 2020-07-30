@@ -1,4 +1,6 @@
-package dev.glitchedcode.pbd.dbd;
+package dev.glitchedcode.pbd.dbd.icon;
+
+import dev.glitchedcode.pbd.dbd.Character;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -35,12 +37,17 @@ public enum StatusEffect implements Icon {
 
     private final String name;
     private final String properName;
-    public static final StatusEffect[] VALUES = StatusEffect.values();
 
     @ParametersAreNonnullByDefault
     StatusEffect(String name, String properName) {
         this.name = name;
         this.properName = properName;
+    }
+
+    @Nonnull
+    @Override
+    public IconCategory getCategory() {
+        return IconCategory.STATUS_EFFECT;
     }
 
     @Nonnull

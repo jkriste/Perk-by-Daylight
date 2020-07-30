@@ -8,10 +8,8 @@ Inspired by [the subreddit with the same name](https://www.reddit.com/r/PerkByDa
 * [How to Run](https://github.com/glitchedcoder/Perk-by-Daylight#how-to-run)
   * [Requirements](https://github.com/glitchedcoder/Perk-by-Daylight#requirements)
   * [Running](https://github.com/glitchedcoder/Perk-by-Daylight#running)
-  * [Optional Command Arguments](https://github.com/glitchedcoder/Perk-by-Daylight#optional-command-arguments)
 * [About](https://github.com/glitchedcoder/Perk-by-Daylight#about)
   * [Notes](https://github.com/glitchedcoder/Perk-by-Daylight#notes) (please read before using)
-  * [Software Requirements](https://github.com/glitchedcoder/Perk-by-Daylight#software-requirements)
   * [Features](https://github.com/glitchedcoder/Perk-by-Daylight#features)
   * [Dependencies](https://github.com/glitchedcoder/Perk-by-Daylight#dependencies)
 * [Screenshots](https://github.com/glitchedcoder/Perk-by-Daylight#screenshots)
@@ -21,7 +19,7 @@ Inspired by [the subreddit with the same name](https://www.reddit.com/r/PerkByDa
 
 ### Requirements
 
-* Windows 7 / 8 / 8.1 / 10
+* Windows OS 7 / 8 / 8.1 / 10
 * Java Runtime Environment [version 1.8](https://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html) or higher.
 
 ### Running
@@ -30,7 +28,7 @@ To download Perk by Daylight, either go to the `Releases` tab on the right side 
 
 Generally, most [releases](https://github.com/glitchedcoder/Perk-by-Daylight/releases) will also be shipped with a `run.bat` file.
 This is a batch file that will run the program via the Command Line or whatever terminal you may have installed.
-The `.JAR` file is not executable, so it must be ran with `java -jar PerkByDaylight.jar` or double-clicking the `run.bat` file.
+The `.JAR` file is not executable, so it must be ran with `java -jar PerkByDaylight.jar` in the command line or double-clicking the `run.bat` file.
 
 ## About
 
@@ -42,12 +40,6 @@ Improper use of this program could result in a false-positive on EasyAntiCheat's
 However, this is highly unlikely when used properly.
 This program does not read, write, or modify game files, including game logs, in any way other than replacing `.PNG` files in their respective places.
 There have been no reports of users getting banned for modifying or replacing in-game icons.
-
-### Software Requirements
-
-* Java [version 1.8](https://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html) or higher.
-
-That's it!
 
 ### Features
 
@@ -62,6 +54,7 @@ That's it!
 * Packs are re-evaluated every launch in case files were messed with while closed.
 * Multi-threaded workload support, as to not lag UI and for a cleaner experience.
 * A UI-implementation of preferences.
+* Logs being created and stored individually once per run, in its own `logs` folder.
 
 *Plan to be Added*
 * Edit/update already existing icon packs.
@@ -69,20 +62,17 @@ That's it!
 * A built-in dialog box for those who want to donate.
 * Lots of documentation that needs to be added.
 * Updating an old icon with a new icon.
-* Logs being created and stored individually once per run, in its own `logs` folder.
-* 
 
 *Might\* be Added*
 * The support for `.rar` files. This might not be possible since RAR files are proprietary and libraries like [JUnRAR](https://github.com/junrar/junrar) do not support WinRAR-compressed files.
 * A workshop for uploading, downloading, and viewing existing icon packs created by the Perk-by-Daylight community.
-* More themes. See FAQ.
+* More themes. See [FAQ](https://github.com/glitchedcoder/Perk-by-Daylight#frequently-asked-questions).
 
 ### Dependencies
 
 Currently, Perk by Daylight uses the following libraries as dependencies:
 * Google FindBugs v3.0.2
 * [Google GSON](https://github.com/google/gson) v2.8.6
-* [Google Guava](https://github.com/google/guava) v19.0 (currently there is a security issue with this version and will be removed entirely from the project soon)
 * [Jansi](https://github.com/fusesource/jansi) v1.17.1
 * [OkHttp](https://github.com/square/okhttp) v4.7.2
 
@@ -90,7 +80,7 @@ Dependencies are automatically packed into the `.JAR` file and do not need to be
 
 ## Screenshots
 
-***Note:** these screenshots are pre-release and features can change*
+***Note:** these screenshots were taken at previous versions and may no longer represent the feature in the current version.*
 
 *Dark and Light Mode Toggle* - Toggle between dark and light mode simply.
 ![Dark and Light Mode Toggler](https://i.imgur.com/VAbAIQY.gif)
@@ -101,25 +91,49 @@ Dependencies are automatically packed into the `.JAR` file and do not need to be
 *Simple Renaming* - Double-click the icon pack to rename it.
 ![Simple Renaming](https://i.imgur.com/tE9Bgz6.gif)
 
-*Easy Clearing of Cache* - Go to `File -> Delete Temp Contents` to delete all contents in the `temp` folder.
+*Easy Clearing of Cache* - Go to `File -> Delete Cache` to delete all contents in the `temp` folder.
 ![Easy Clearing of Cahce](https://i.imgur.com/2DSCJq7.gif)
 
 *Easily Change Preferences* - Go to `File -> Preferences...` to change how the program operates.
 ![Easily Change Preferences](https://i.imgur.com/GnaiLeK.gif)
 
+*Get Information About Icon Packs* - Go to `Pack -> Icon Pack Info...` to get information like number of icons, icon pack location, and missing icons.
+![Get Information About Icon Packs](https://i.imgur.com/3vXLNjF.gif)
+
 ## Frequently Asked Questions
 
 **How can I be sure this isn't a hack?**
 
-The full project, including the code and other resources, is open-sourced and is available for anyone to fork and modify to their heart's desire long as they stick to the [license](https://github.com/glitchedcoder/Perk-by-Daylight/blob/master/LICENSE.md). If you have questions about the what the code does or any other resources in this project, feel free to create an issue or send me an email at `glitchedcoder[at]gmail.com`.
+The full project, including the code and other resources, is open-sourced and is available for anyone to fork and modify to their heart's desire long as they stick to the [license](https://github.com/glitchedcoder/Perk-by-Daylight/blob/master/LICENSE.md). If you have questions about what the code does or any other resources in this project, feel free to create an issue with the `question` label or send me an email at `glitchedcoder[at]gmail.com`.
 
 **Where does the liability fall if someone were to be falsely banned?**
 
-I have to be quite frank by saying that I do not take liability for the false banishment of any user using this program. This program in no way raises the chances of a user being banned and is the same likelyhood as another user manually installing icons. This program only automates the process and allows you to have collections of icon packs. The only way a user can be banned for changing in-game icons is when EasyAntiCheat changes their program to detect this.
+I have to be quite frank by saying that I do not take liability for the false banishment of any user using this program. This program in no way raises the chances of a user being banned and is the same likelyhood as another user manually installing icons. This program only automates the process and allows you to have collections of icon packs. The only way a user can be banned for changing in-game icons is when EasyAntiCheat changes their program to detect this, which is not likely for the foreseeable future.
+
+**How do I create a Perk-by-Daylight-compatible .ZIP file?**
+
+As long as your icon pack has at least one of the following sub-folders (shown below) all that's needed is to go to your main icon pack folder (that contains folders like `Actions`, `Perks`, etc.), right-click it, then select `Send to -> Compressed (zipped) folder`.
+![Layout](https://i.imgur.com/xkG84eC.png)
+
+If the icon pack you downloaded does not have a similar layout or is a `.rar` file, just extract it and go to `Pack -> New Icon Pack -> From Folder` and select the main pack folder (containing `Actions`, `Perks`, etc).
+
+**Where can I go to get a pre-made icon pack?**
+
+There are plenty of sources where icon packs are available to download. Check out some of the links below:
+* [Reddit (r/PerkByDaylight)](https://www.reddit.com/r/PerkByDaylight/)
+<!--- TODO -->
 
 **When will [insert feature] be added?**
 
 I make updates to this program on my own time and currently do not have a team of other developers working for me. If you have a feature that hasn't been previously suggested, feel free to create a feature request [here](https://github.com/glitchedcoder/Perk-by-Daylight/issues/new?assignees=glitchedcoder&labels=enhancement&template=feature_request.md&title=%5BFEATURE%5D).
+
+<i>* Features that are in the "Might be Added" category are quite trivial and would require hacky workarounds or months and months of development, and as such, probably won't see the light of day.</i>
+
+**How can I contribute to Perk by Daylight?**
+
+Any help with the project is much appreciated! If you have experience with Java or JavaFX, feel free to fork the project and make a pull request once you're satisfied with the changes. If the pull request is accepted, I will be sure to give you credit. Thank you for your contribution!
+
+Optionally, if you're not a developer, but would like to contribute, you can make a donation [here](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=kristensenjl%40my.gvltec.edu&item_name=Making+free+software+for+all.&currency_code=USD&source=url). Donations are optional and any amount is helpful. Thank you!
 
 **Where can I report a bug or error I've come across?**
 
@@ -131,14 +145,17 @@ Yes, actually. If you think you have a theme that's nice-looking and new, feel f
 
 **What data is cached on my computer?**
 
-All data that Perk by Daylight caches on your computer can be found by going to `File -> Open PBD Folder` or typing in the Windows search bar `%appdata%` then selecting the `Perk by Daylight` folder. There, you can find files such as `logger.txt` which stores what is outputted to the console, `config.json`, which stores your preferences, and three folders:
+All data that Perk by Daylight caches on your computer can be found by going to `File -> Open PBD Folder` or typing in the Windows search bar `%appdata%` then selecting the `Perk by Daylight` folder. There, you can find files such as `latest.log` which stores the current log if the program is running, `config.json`, which stores your preferences, and three folders:
 * `packs` - This folder stores all icon packs. All icon packs contain a `packmeta.json` file which caches the name and the missing icons of the pack. This is updated every time you open the program.
-* `error logs` - This folder stores any and all occurrences of errors and keeps the diagnostics in the file, formatted `error_log_XXXX_XX_XX_XX_XX_XX_XXX.txt`. The X's represent the time that the error happened, up to the millisecond. Error logs **do not** store any personal information about you or your computer, only what was going on when the error happened and the error itself.
-* `temp` - This folder is used to evaluate new icon packs before they are added to the `packs` folder. If the new pack is evaluated to not be an icon pack, the icon pack folder and its contents will remain in the `temp` folder until deleted. You can delete all contents in the `temp` folder by going to `File -> Delete Temp Contents`.
+* `error logs` - This folder stores any and all occurrences of errors and keeps the diagnostics in the file, formatted `XXXX.XX.XX.XX.XX.XX.XXX.errlog`. The X's represent the time that the error happened, up to the millisecond. Error logs **do not** store any personal information about you or your computer, only what was going on when the error happened and the error itself.
+* `logs` - This folder stores all logs of previous runs of the program, formatted `XXXX.XX.XX.XX.XX.XX.log`. The X's represent the time the log was saved, up to the second.
+* `temp` - This folder is used to evaluate new icon packs before they are added to the `packs` folder. If the new pack is evaluated to not be an icon pack, the icon pack folder and its contents will remain in the `temp` folder until deleted.
+
+You can optionally delete all logs, error logs, and anything in the `temp` folder by checking `Delete Logs` and `Delete Error Logs` in your preferences and then going to `File -> Delete Cache`.
 
 **What about privacy? Is any of my data being collected?**
 
-Perk by Daylight will in no circumstances upload **ANY** data to anywhere. The only time Perk by Daylight will use the network is when downloading an update, when requested to. You have the option of ignoring updates by going to `File -> Preferences...` and checking the `Ignore Updates` option. Optionally, there is also a `Offline Mode` option, in which Perk by Daylight can be used without internet. I respect the privacy of anyone that uses Perk by Daylight and can guarantee that Perk by Daylight does not use the internet with the exception of downloading updates.
+Perk by Daylight will in no circumstances upload **ANY** data. The only time Perk by Daylight will use the network is when downloading an update when requested to. You have the option of ignoring updates by going to `File -> Preferences...` and checking the `Ignore Updates` option. Optionally, there is also a `Offline Mode` option, in which Perk by Daylight can be used without internet and cannot check for updates. I respect the privacy of anyone that uses Perk by Daylight and can guarantee that Perk by Daylight does not use the internet with the exception of downloading updates.
 
 **Why Java of all programming languages?**
 

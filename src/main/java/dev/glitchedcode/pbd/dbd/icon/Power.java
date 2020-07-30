@@ -1,4 +1,6 @@
-package dev.glitchedcode.pbd.dbd;
+package dev.glitchedcode.pbd.dbd.icon;
+
+import dev.glitchedcode.pbd.dbd.Character;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -39,7 +41,6 @@ public enum Power implements Icon {
     private final String subFolder;
     private final String properName;
     private final Character character;
-    public static final Power[] VALUES = Power.values();
 
     @ParametersAreNonnullByDefault
     Power(String name, String properName) {
@@ -57,6 +58,12 @@ public enum Power implements Icon {
         this.properName = properName;
         this.subFolder = subFolder;
         this.character = character;
+    }
+
+    @Nonnull
+    @Override
+    public IconCategory getCategory() {
+        return IconCategory.POWER;
     }
 
     @Nonnull

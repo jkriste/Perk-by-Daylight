@@ -40,7 +40,7 @@ public final class LatestRelease {
         if (object.has("tag_name")) {
             String tag = object.get("tag_name").getAsString();
             logger.debug("tag_name JSON returned {}", tag);
-            //return !tag.equalsIgnoreCase(PBD.VERSION);
+            return !tag.equalsIgnoreCase(PBD.VERSION.toString());
         }
         return false;
     }

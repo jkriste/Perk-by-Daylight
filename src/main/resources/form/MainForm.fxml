@@ -14,7 +14,7 @@
             <Menu mnemonicParsing="false" text="File">
                 <MenuItem mnemonicParsing="false" onAction="#onPreferences" text="Preferences..."/>
                 <MenuItem mnemonicParsing="false" onAction="#onCheckUpdate" text="Check For Update"/>
-                <MenuItem mnemonicParsing="false" onAction="#onDeleteTempContents" text="Delete Temp Contents"/>
+                <MenuItem mnemonicParsing="false" onAction="#onDeleteCache" text="Delete Cache"/>
                 <MenuItem mnemonicParsing="false" onAction="#onOpenPBD" text="Open PBD Folder"/>
                 <MenuItem mnemonicParsing="false" onAction="#onDonate" text="Donate..."/>
             </Menu>
@@ -24,6 +24,7 @@
                     <MenuItem mnemonicParsing="false" onAction="#onNewPackZip" text="From ZIP File"/>
                 </Menu>
                 <MenuItem mnemonicParsing="false" onAction="#onRefreshIconPacks" text="Refresh Icon Packs"/>
+                <MenuItem fx:id="packInfoMenu" mnemonicParsing="false" onAction="#onPackInfo" text="Icon Pack Info..."/>
                 <MenuItem fx:id="installIconPack" mnemonicParsing="false" onAction="#onInstallIconPack"
                           text="Install Icon Pack"/>
                 <MenuItem fx:id="deleteIconPack" mnemonicParsing="false" onAction="#onDeleteIconPack"

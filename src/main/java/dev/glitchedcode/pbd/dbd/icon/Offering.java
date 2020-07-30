@@ -1,4 +1,6 @@
-package dev.glitchedcode.pbd.dbd;
+package dev.glitchedcode.pbd.dbd.icon;
+
+import dev.glitchedcode.pbd.dbd.Character;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -113,7 +115,6 @@ public enum Offering implements Icon {
     private final String name;
     private final String subFolder;
     private final String properName;
-    public static final Offering[] VALUES = values();
 
     @ParametersAreNonnullByDefault
     Offering(String name, String properName) {
@@ -125,6 +126,12 @@ public enum Offering implements Icon {
         this.name = name;
         this.properName = properName;
         this.subFolder = subFolder;
+    }
+
+    @Nonnull
+    @Override
+    public IconCategory getCategory() {
+        return IconCategory.FAVOR;
     }
 
     @Nonnull
@@ -154,33 +161,6 @@ public enum Offering implements Icon {
     @Nullable
     @Override
     public Character getCharacter() {
-        return null;
-    }
-
-    @Nullable
-    public static Offering fromName(@Nonnull String name) {
-        for (Offering offering : VALUES) {
-            if (offering.getName().equalsIgnoreCase(name))
-                return offering;
-        }
-        return null;
-    }
-
-    @Nonnull
-    public static Offering fromName(@Nonnull String name, @Nonnull Offering defaultVal) {
-        for (Offering offering : VALUES) {
-            if (offering.getName().equalsIgnoreCase(name))
-                return offering;
-        }
-        return defaultVal;
-    }
-
-    @Nullable
-    public static Offering fromProperName(@Nonnull String properName) {
-        for (Offering offering : VALUES) {
-            if (offering.getProperName().equalsIgnoreCase(properName))
-                return offering;
-        }
         return null;
     }
 }

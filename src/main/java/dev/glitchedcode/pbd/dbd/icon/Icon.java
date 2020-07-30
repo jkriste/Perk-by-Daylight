@@ -1,12 +1,21 @@
-package dev.glitchedcode.pbd.dbd;
+package dev.glitchedcode.pbd.dbd.icon;
 
 import dev.glitchedcode.pbd.PBD;
+import dev.glitchedcode.pbd.dbd.Character;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.File;
 
 public interface Icon {
+
+    /**
+     * Gets the category of the {@link Icon}.
+     *
+     * @return The category of the {@link Icon}.
+     */
+    @Nonnull
+    IconCategory getCategory();
 
     /**
      * Gets the file name of the {@link Icon}.

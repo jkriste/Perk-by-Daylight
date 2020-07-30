@@ -1,7 +1,8 @@
-package dev.glitchedcode.pbd.dbd;
+package dev.glitchedcode.pbd.dbd.icon;
+
+import dev.glitchedcode.pbd.dbd.Character;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import static dev.glitchedcode.pbd.dbd.Killer.*;
@@ -55,7 +56,6 @@ public enum Portrait implements Icon {
     private final String name;
     private final String subFolder;
     private final Character character;
-    public static final Portrait[] VALUES = Portrait.values();
 
     @ParametersAreNonnullByDefault
     Portrait(String name, Character character) {
@@ -66,6 +66,12 @@ public enum Portrait implements Icon {
         this.name = name;
         this.subFolder = subFolder;
         this.character = character;
+    }
+
+    @Nonnull
+    @Override
+    public IconCategory getCategory() {
+        return IconCategory.PORTRAIT;
     }
 
     @Nonnull
@@ -101,41 +107,5 @@ public enum Portrait implements Icon {
     @Override
     public Character getCharacter() {
         return character;
-    }
-
-    @Nullable
-    public static Portrait fromName(@Nonnull String name) {
-        for (Portrait portrait : VALUES) {
-            if (portrait.name.equalsIgnoreCase(name))
-                return portrait;
-        }
-        return null;
-    }
-
-    @Nonnull
-    public static Portrait fromName(@Nonnull String name, @Nonnull Portrait defaultVal) {
-        for (Portrait portrait : VALUES) {
-            if (portrait.name.equalsIgnoreCase(name))
-                return portrait;
-        }
-        return defaultVal;
-    }
-
-    @Nullable
-    public static Portrait fromProperName(@Nonnull String properName) {
-        for (Portrait portrait : VALUES) {
-            if (portrait.getProperName().equalsIgnoreCase(properName))
-                return portrait;
-        }
-        return null;
-    }
-
-    @Nonnull
-    public static Portrait fromCharacter(@Nonnull Character character) {
-        for (Portrait portrait : VALUES) {
-            if (portrait.getCharacter().getName().equalsIgnoreCase(character.getName()))
-                return portrait;
-        }
-        return MS2; // Return Ash; this should never happen
     }
 }

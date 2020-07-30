@@ -18,6 +18,8 @@ public class PreferenceController implements Initializable {
 
     @FXML private CheckBox debugCheck;
     @FXML private CheckBox ignoreCheck;
+    @FXML private CheckBox delErrCheck;
+    @FXML private CheckBox delLogCheck;
     @FXML private CheckBox noColorCheck;
     @FXML private CheckBox offlineCheck;
     @FXML private Spinner<Integer> statusSpinner;
@@ -38,6 +40,8 @@ public class PreferenceController implements Initializable {
         ignoreCheck.setSelected(CONFIG.doesIgnoreUpdates());
         noColorCheck.setSelected(CONFIG.noColor());
         offlineCheck.setSelected(CONFIG.isOfflineMode());
+        delErrCheck.setSelected(CONFIG.deleteErrorLogs());
+        delLogCheck.setSelected(CONFIG.deleteLogs());
     }
 
     @FXML
@@ -47,6 +51,9 @@ public class PreferenceController implements Initializable {
         CONFIG.setNoColor(noColorCheck.isSelected());
         CONFIG.setOfflineMode(offlineCheck.isSelected());
         CONFIG.setStatusDuration(statusSpinner.getValue().shortValue());
+        CONFIG.setDeleteErrorLogs(delErrCheck.isSelected());
+        CONFIG.setDeleteLogs(delLogCheck.isSelected());
+        logger.info("Saved preferences.");
         stage.close();
     }
 

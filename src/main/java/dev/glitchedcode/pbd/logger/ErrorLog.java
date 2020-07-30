@@ -14,19 +14,13 @@ import java.util.stream.Stream;
 public class ErrorLog {
 
     private static final Logger logger = PBD.getLogger();
-    private static final File ERROR_DIR = new File(PBD.PBD_DIR, "error logs");
 
     public ErrorLog(Thread thread, Throwable throwable) {
         String stacktrace = PBD.formatStackTrace(throwable);
         logger.error(Ansi.Color.RED, "Uncaught exception " + throwable.getClass().getName()
                 + " in thread \"" + thread.getName() + "\": " + throwable.getMessage());
         logger.debug(Ansi.Color.RED, "Stack trace:\n" + stacktrace);
-        if (!ERROR_DIR.exists()) {
-            logger.debug("Error logs folder doesn't exist, creating...");
-            if (ERROR_DIR.mkdir())
-                logger.debug("Created error log folder located at " + ERROR_DIR.getAbsolutePath());
-        }
-        File log = new File(ERROR_DIR, "error_log_" + timeLog() + ".txt");
+        File log = new File(PBD.ERROR_LOGS_DIR, timeLog() + ".errlog");
         try {
             if (log.createNewFile())
                 logger.debug("Created error log \"" + log.getName() + "\".");
@@ -34,7 +28,7 @@ public class ErrorLog {
             Stream.of("Error log of Perk by Daylight " + PBD.VERSION,
                     "// Here we go again :(",
                     "",
-                    "Please report bugs and issues here: https://github.com/glitchedcoder/Perk-by-Daylight/issues/new/choose",
+                    "Please report bugs, errors, and issues here: https://github.com/glitchedcoder/Perk-by-Daylight/issues/new/choose",
                     "",
                     "Occurrence: " + (new SimpleDateFormat("dd-MM-yyyy 'at' HH:mm:ss z")).format(new Date()),
                     "",
@@ -61,7 +55,7 @@ public class ErrorLog {
     }
 
     private String timeLog() {
-        SimpleDateFormat f = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss_SSS");
+        SimpleDateFormat f = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss.SSS");
         return f.format(new Date());
     }
 }

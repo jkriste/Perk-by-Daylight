@@ -1,4 +1,6 @@
-package dev.glitchedcode.pbd.dbd;
+package dev.glitchedcode.pbd.dbd.icon;
+
+import dev.glitchedcode.pbd.dbd.Character;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -35,7 +37,6 @@ public enum Item implements Icon {
     private final String name;
     private final String subFolder;
     private final String properName;
-    public static final Item[] VALUES = values();
 
     @ParametersAreNonnullByDefault
     Item(String name, String properName) {
@@ -47,6 +48,12 @@ public enum Item implements Icon {
         this.name = name;
         this.properName = properName;
         this.subFolder = subFolder;
+    }
+
+    @Nonnull
+    @Override
+    public IconCategory getCategory() {
+        return IconCategory.ITEM;
     }
 
     @Nonnull
@@ -76,15 +83,6 @@ public enum Item implements Icon {
     @Nullable
     @Override
     public Character getCharacter() {
-        return null;
-    }
-
-    @Nullable
-    public static Item fromProperName(@Nonnull String properName) {
-        for (Item item : VALUES) {
-            if (item.getProperName().equalsIgnoreCase(properName))
-                return item;
-        }
         return null;
     }
 }

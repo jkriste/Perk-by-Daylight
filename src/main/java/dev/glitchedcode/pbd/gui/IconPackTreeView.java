@@ -1,92 +1,66 @@
 package dev.glitchedcode.pbd.gui;
 
 import dev.glitchedcode.pbd.PBD;
-import dev.glitchedcode.pbd.dbd.Action;
-import dev.glitchedcode.pbd.dbd.Addon;
-import dev.glitchedcode.pbd.dbd.Item;
-import dev.glitchedcode.pbd.dbd.Offering;
-import dev.glitchedcode.pbd.dbd.Perk;
-import dev.glitchedcode.pbd.dbd.Portrait;
-import dev.glitchedcode.pbd.dbd.Power;
-import dev.glitchedcode.pbd.dbd.StatusEffect;
+import dev.glitchedcode.pbd.dbd.icon.Icon;
+import dev.glitchedcode.pbd.dbd.icon.IconCategory;
 import dev.glitchedcode.pbd.logger.Logger;
 import dev.glitchedcode.pbd.pack.IconPack;
 import dev.glitchedcode.pbd.pack.PackMeta;
 import javafx.scene.control.TreeItem;
 
 import javax.annotation.Nonnull;
+import java.util.EnumMap;
 
-public class IconPackTreeView extends TreeItem<String> {
+public class IconPackTreeView {
 
-    private final IconPack iconPack;
-    private static final transient Logger logger = PBD.getLogger();
+    private static final Logger logger = PBD.getLogger();
 
-    @SuppressWarnings("unchecked")
-    public IconPackTreeView(@Nonnull IconPack iconPack) {
-        super(iconPack.getMeta().getName());
-        this.iconPack = iconPack;
-        PackMeta meta = iconPack.getMeta();
-        TreeItem<String> perks = new TreeItem<>("Perks");
-        for (Perk perk : Perk.VALUES) {
-            if (meta.isMissingIcon(perk))
-                continue;
-            perks.getChildren().add(new TreeItem<>(perk.getProperName()));
-        }
-        TreeItem<String> addons = new TreeItem<>("Addons");
-        for (Addon addon : Addon.VALUES) {
-            if (meta.isMissingIcon(addon))
-                continue;
-            addons.getChildren().add(new TreeItem<>(addon.getProperName()));
-        }
-        TreeItem<String> portraits = new TreeItem<>("Portraits");
-        for (Portrait portrait : Portrait.VALUES) {
-            if (meta.isMissingIcon(portrait))
-                continue;
-            portraits.getChildren().add(new TreeItem<>(portrait.getProperName()));
-        }
-        TreeItem<String> offerings = new TreeItem<>("Offerings");
-        for (Offering offering : Offering.VALUES) {
-            if (meta.isMissingIcon(offering))
-                continue;
-            offerings.getChildren().add(new TreeItem<>(offering.getProperName()));
-        }
-        TreeItem<String> actions = new TreeItem<>("Actions");
-        for (Action action : Action.VALUES) {
-            if (meta.isMissingIcon(action))
-                continue;
-            actions.getChildren().add(new TreeItem<>(action.getProperName()));
-        }
-        TreeItem<String> items = new TreeItem<>("Items");
-        for (Item item : Item.VALUES) {
-            if (meta.isMissingIcon(item))
-                continue;
-            items.getChildren().add(new TreeItem<>(item.getProperName()));
-        }
-        TreeItem<String> statusEffects = new TreeItem<>("Status Effects");
-        for (StatusEffect s : StatusEffect.VALUES) {
-            if (meta.isMissingIcon(s))
-                continue;
-            statusEffects.getChildren().add(new TreeItem<>(s.getProperName()));
-        }
-        TreeItem<String> powers = new TreeItem<>("Powers");
-        for (Power p : Power.VALUES) {
-            if (meta.isMissingIcon(p))
-                continue;
-            powers.getChildren().add(new TreeItem<>(p.getProperName()));
-        }
-        getChildren().addAll(
-                perks,
-                addons,
-                portraits,
-                offerings,
-                actions,
-                items,
-                statusEffects,
-                powers);
+    private IconPackTreeView() {
     }
 
-    @Nonnull
-    public IconPack getIconPack() {
-        return iconPack;
+    public static TreeItem<String> of(@Nonnull IconPack iconPack) {
+        PackMeta meta = iconPack.getMeta();
+        TreeItem<String> root = new TreeItem<>(meta.getName());
+        EnumMap<IconCategory, TreeItem<String>> categories = new EnumMap<>(IconCategory.class);
+        for (IconCategory ic : IconCategory.values()) {
+            categories.put(ic, new TreeItem<>(ic.getName()));
+        }
+        for (Icon icon : PBD.getIcons()) {
+            if (meta.isMissingIcon(icon))
+                continue;
+            TreeItem<String> category = categories.get(icon.getCategory());
+            category.getChildren().add(new TreeItem<>(icon.getProperName()));
+        }
+        for (IconCategory ic : IconCategory.values()) {
+            if (categories.get(ic).getChildren().isEmpty())
+                categories.remove(ic);
+        }
+        root.getChildren().addAll(categories.values());
+        return root;
+    }
+
+    public static TreeItem<String> ofMissing(@Nonnull IconPack iconPack) {
+        PackMeta meta = iconPack.getMeta();
+        TreeItem<String> root = new TreeItem<>("Missing");
+        EnumMap<IconCategory, TreeItem<String>> categories = new EnumMap<>(IconCategory.class);
+        for (IconCategory ic : IconCategory.values()) {
+            categories.put(ic, new TreeItem<>(ic.getName()));
+        }
+        for (String name : meta.getMissingIcons()) {
+            Icon icon = PBD.getIcon(name);
+            if (icon == null) {
+                logger.warn("Failed to get icon with name '{}' while " +
+                        "getting missing tree for icon pack '{}'", name, meta.getName());
+                continue;
+            }
+            TreeItem<String> category = categories.get(icon.getCategory());
+            category.getChildren().add(new TreeItem<>(icon.getProperName()));
+        }
+        for (IconCategory ic : IconCategory.values()) {
+            if (categories.get(ic).getChildren().isEmpty())
+                categories.remove(ic);
+        }
+        root.getChildren().addAll(categories.values());
+        return root;
     }
 }

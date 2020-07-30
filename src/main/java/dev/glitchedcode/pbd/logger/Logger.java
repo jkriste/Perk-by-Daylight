@@ -11,52 +11,32 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Stream;
 
 public class Logger {
 
-    private final File dir, file;
+    private final File logFile;
+    private final AtomicInteger errCount;
+    private final AtomicInteger warnCount;
     private final BetterPrintWriter writer;
-    private final AtomicInteger errCount, warnCount;
+    private final SimpleDateFormat logFormat;
+    private final SimpleDateFormat timeFormat;
+
+    private static Logger INSTANCE;
     private static final Config CONFIG = PBD.getConfig();
-    private static final SimpleDateFormat FORMAT = new SimpleDateFormat("HH:mm:ss");
 
-    public Logger(File dir) {
-        this(dir, "logger");
-    }
-
-    public Logger(File dir, String name) {
-        this(dir, name.endsWith(".txt") ? name : (name + ".txt"), true);
-    }
-
-    public Logger(File dir, String name, boolean append) {
-        this.dir = dir;
-        if (!dir.isDirectory())
-            throw new IllegalArgumentException(PBD.format("Given file {} is not a directory.", dir.getAbsolutePath()));
-        this.file = new File(dir, name);
-        BetterPrintWriter a = null;
-        if (!this.file.exists()) {
-            try {
-                if (this.file.createNewFile())
-                    System.out.println(Ansi.ansi().fgGreen().a("Created new file: " + name).reset());
-            } catch (IOException e) {
-                System.out.println(Ansi.ansi().fgRed().a("Failed to create file " + name).reset());
-                e.printStackTrace();
-            }
+    private Logger() throws IOException {
+        this.logFile = new File(PBD.PBD_DIR, "latest.log");
+        this.logFormat = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss");
+        if (logFile.exists()) {
+            if (!logFile.renameTo(new File(PBD.LOGS_DIR, logFormat.format(new Date()) + ".log")))
+                throw new IOException("Could not move existing latest.log file to 'logs' dir: " + logFile.getAbsolutePath());
         }
-        try {
-            a = new BetterPrintWriter(new BufferedWriter(new FileWriter(this.file, append)));
-        } catch (IOException e) {
-            System.out.println(Ansi.ansi().fgRed().a("Failed to create print writer.").reset());
-            e.printStackTrace();
-        }
-        this.writer = a;
-        if (this.file.length() != 0L && this.writer != null) {
-            SimpleDateFormat d = new SimpleDateFormat("MMMM dd, yyyy");
-            Stream.of("", "Date: " + d.format(new Date()), "").forEach(this.writer::println);
-        }
-        errCount = new AtomicInteger(0);
-        warnCount = new AtomicInteger(0);
+        if (!logFile.createNewFile())
+            throw new IOException("Could not create 'latest.log' file: " + logFile.getAbsolutePath());
+        this.writer = new BetterPrintWriter(new BufferedWriter(new FileWriter(logFile, false)));
+        this.timeFormat = new SimpleDateFormat("HH:mm:ss");
+        this.errCount = new AtomicInteger(0);
+        this.warnCount = new AtomicInteger(0);
     }
 
     public void print(LogType type, String message) {
@@ -193,15 +173,17 @@ public class Logger {
             this.writer.flush();
     }
 
-    public void close() {
+    public void close() throws IOException {
         if (isOpen()) {
             if (errCount.get() > 0 || warnCount.get() > 0) {
                 warn(Ansi.Color.YELLOW, "Finished with {} error(s) and {} warning(s).", errCount.get(), warnCount.get());
-                info("Report bugs and issues here: https://github.com/glitchedcoder/Perk-by-Daylight/issues/new/choose");
+                info("Report bugs, errors, and issues here: https://github.com/glitchedcoder/Perk-by-Daylight/issues/new/choose");
             } else
                 info(Ansi.Color.GREEN, "Finished with {} error(s) and {} warning(s).", errCount.get(), warnCount.get());
             this.writer.flush();
             this.writer.close();
+            if (!logFile.renameTo(new File(PBD.LOGS_DIR, logFormat.format(new Date()) + ".log")))
+                throw new IOException("Failed to move 'latest.log' file to 'logs' dir.");
         }
     }
 
@@ -209,12 +191,8 @@ public class Logger {
         return this.writer.isOpen();
     }
 
-    public File getDir() {
-        return this.dir;
-    }
-
     public File getFile() {
-        return this.file;
+        return logFile;
     }
 
     public BetterPrintWriter getWriter() {
@@ -229,8 +207,20 @@ public class Logger {
         return warnCount.get();
     }
 
+    public static Logger getInstance() {
+        if (INSTANCE == null) {
+            try {
+                INSTANCE = new Logger();
+            } catch (IOException e) {
+                System.err.println("Failed to initiate the logger: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+        return INSTANCE;
+    }
+
     private String time() {
-        return "[" + FORMAT.format(new Date()) + "] ";
+        return "[" + timeFormat.format(new Date()) + "] ";
     }
 
     private String thread() {

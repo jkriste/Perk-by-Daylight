@@ -11,9 +11,11 @@ public class Config {
     private boolean noColor;
     private String dbdFolder;
     private boolean darkMode;
+    private boolean deleteLogs;
     private boolean offlineMode;
     private short statusDuration;
     private boolean ignoreUpdates;
+    private boolean deleteErrorLogs;
 
     private static final transient Logger logger = PBD.getLogger();
 
@@ -25,7 +27,7 @@ public class Config {
         if (defaults) {
             this.dbdFolder = "";
             this.statusDuration = 10;
-            this.darkMode = true;
+            this.darkMode = true; // dark mode is superior
         }
     }
 
@@ -64,6 +66,14 @@ public class Config {
         return dbdFolder;
     }
 
+    public boolean deleteLogs() {
+        return deleteLogs;
+    }
+
+    public boolean deleteErrorLogs() {
+        return deleteErrorLogs;
+    }
+
     public void setDebug(boolean debug) {
         this.debug = debug;
     }
@@ -73,8 +83,8 @@ public class Config {
     }
 
     public void setStatusDuration(short statusDuration) {
-        if (statusDuration < 1) {
-            logger.warn("Tried setting status duration to '{}', must be 1 or higher.", statusDuration);
+        if (statusDuration < 1 || statusDuration > 60) {
+            logger.warn("Tried setting status duration to '{}', must be between 1 and 60.", statusDuration);
             return;
         }
         this.statusDuration = statusDuration;
@@ -94,5 +104,13 @@ public class Config {
 
     public void setIgnoreUpdates(boolean ignoreUpdates) {
         this.ignoreUpdates = ignoreUpdates;
+    }
+
+    public void setDeleteErrorLogs(boolean deleteErrorLogs) {
+        this.deleteErrorLogs = deleteErrorLogs;
+    }
+
+    public void setDeleteLogs(boolean deleteLogs) {
+        this.deleteLogs = deleteLogs;
     }
 }

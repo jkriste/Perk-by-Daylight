@@ -1,11 +1,10 @@
-package dev.glitchedcode.pbd.dbd;
+package dev.glitchedcode.pbd.dbd.icon;
+
+import dev.glitchedcode.pbd.dbd.Character;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
-
-import java.util.HashSet;
-import java.util.Set;
 
 import static dev.glitchedcode.pbd.dbd.Survivor.*;
 import static dev.glitchedcode.pbd.dbd.Killer.*;
@@ -169,7 +168,6 @@ public enum Perk implements Icon {
     private final String subFolder;
     private final String properName;
     private final Character character;
-    public static final Perk[] VALUES = values();
 
     Perk(@Nonnull String name, @Nonnull String properName) {
         this(name, properName, "", null);
@@ -193,6 +191,12 @@ public enum Perk implements Icon {
 
     @Nonnull
     @Override
+    public IconCategory getCategory() {
+        return IconCategory.PERK;
+    }
+
+    @Nonnull
+    @Override
     public String getName() {
         return name;
     }
@@ -210,11 +214,6 @@ public enum Perk implements Icon {
     }
 
     @Nonnull
-    public String getPerkName() {
-        return getName().toLowerCase().replace('_', ' ');
-    }
-
-    @Nonnull
     @Override
     public String getSubfolderName() {
         return "Perks\\" + subFolder;
@@ -224,46 +223,5 @@ public enum Perk implements Icon {
     @Override
     public Character getCharacter() {
         return character;
-    }
-
-    @Nullable
-    @ParametersAreNonnullByDefault
-    public static Perk fromName(String name) {
-        for (Perk perk : VALUES) {
-            if (perk.name.equalsIgnoreCase(name))
-                return perk;
-        }
-        return null;
-    }
-
-    @Nonnull
-    @ParametersAreNonnullByDefault
-    public static Perk fromName(String name, Perk defaultVal) {
-        for (Perk perk : VALUES) {
-            if (perk.name.equalsIgnoreCase(name))
-                return perk;
-        }
-        return defaultVal;
-    }
-
-    @Nullable
-    public static Perk fromProperName(@Nonnull String properName) {
-        for (Perk perk : VALUES) {
-            if (perk.properName.equalsIgnoreCase(properName))
-                return perk;
-        }
-        return null;
-    }
-
-    public static Set<Perk> fromCharacter(@Nonnull Character character) {
-        Set<Perk> perks = new HashSet<>();
-        for (Perk perk : VALUES) {
-            Character c = perk.getCharacter();
-            if (c == null)
-                continue;
-            if (c.getName().equalsIgnoreCase(character.getName()))
-                perks.add(perk);
-        }
-        return perks;
     }
 }

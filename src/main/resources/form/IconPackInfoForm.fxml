@@ -1,40 +1,87 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<BorderPane prefHeight="327.0" prefWidth="280.0" xmlns="http://javafx.com/javafx/10.0.2-internal"
+<BorderPane prefHeight="358.0" prefWidth="268.0" xmlns="http://javafx.com/javafx/10.0.2-internal"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="dev.glitchedcode.pbd.gui.controller.IconPackInfoController">
     <center>
-        <GridPane prefHeight="336.0" prefWidth="271.0" BorderPane.alignment="CENTER">
+        <GridPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="CENTER">
             <columnConstraints>
-                <ColumnConstraints hgrow="SOMETIMES" maxWidth="121.0" minWidth="10.0" prefWidth="84.0"/>
-                <ColumnConstraints hgrow="SOMETIMES" maxWidth="179.0" minWidth="10.0" prefWidth="167.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="331.0" minWidth="10.0" prefWidth="313.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="218.0" minWidth="0.0" prefWidth="0.0"/>
             </columnConstraints>
             <rowConstraints>
-                <RowConstraints maxHeight="34.0" minHeight="10.0" prefHeight="33.0" vgrow="SOMETIMES"/>
-                <RowConstraints maxHeight="44.0" minHeight="10.0" prefHeight="32.0" vgrow="SOMETIMES"/>
-                <RowConstraints maxHeight="50.0" minHeight="10.0" prefHeight="32.0" vgrow="SOMETIMES"/>
-                <RowConstraints maxHeight="48.0" minHeight="10.0" prefHeight="34.0" vgrow="SOMETIMES"/>
-                <RowConstraints maxHeight="65.0" minHeight="10.0" prefHeight="34.0" vgrow="SOMETIMES"/>
-                <RowConstraints maxHeight="130.0" minHeight="10.0" prefHeight="130.0" vgrow="SOMETIMES"/>
+                <RowConstraints maxHeight="34.0" minHeight="10.0" prefHeight="22.0" vgrow="SOMETIMES"/>
+                <RowConstraints maxHeight="34.0" minHeight="10.0" prefHeight="23.0" vgrow="SOMETIMES"/>
+                <RowConstraints maxHeight="35.0" minHeight="10.0" prefHeight="23.0" vgrow="SOMETIMES"/>
+                <RowConstraints maxHeight="44.0" minHeight="10.0" prefHeight="24.0" vgrow="SOMETIMES"/>
+                <RowConstraints maxHeight="74.0" minHeight="10.0" prefHeight="24.0" vgrow="SOMETIMES"/>
+                <RowConstraints maxHeight="88.0" minHeight="10.0" prefHeight="39.0" vgrow="SOMETIMES"/>
+                <RowConstraints maxHeight="146.0" minHeight="10.0" prefHeight="29.0" vgrow="SOMETIMES"/>
+                <RowConstraints maxHeight="146.0" minHeight="10.0" prefHeight="146.0" vgrow="SOMETIMES"/>
             </rowConstraints>
-            <Label text="Name:" GridPane.halignment="RIGHT">
+            <Label text="Name:" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
                 <font>
                     <Font name="System Bold" size="12.0"/>
                 </font>
             </Label>
-            <Label text="\%name%" GridPane.columnIndex="1" GridPane.halignment="CENTER"/>
-            <Label text="Icons:" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
+            <Label fx:id="nameLabel" text="\%name%" GridPane.halignment="CENTER" GridPane.rowIndex="1"/>
+            <Label text="Icons:" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
                 <font>
                     <Font name="System Bold" size="12.0"/>
                 </font>
             </Label>
-            <Label text="\%icons%" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1"/>
-            <Label text="Location:" GridPane.halignment="RIGHT" GridPane.rowIndex="2"/>
-            <Label text="Missing Icons:" GridPane.halignment="RIGHT" GridPane.rowIndex="5"/>
+            <Label fx:id="iconsLabel" text="\%icons% (%i% missing)" GridPane.halignment="CENTER" GridPane.rowIndex="3"/>
+            <Label text="Location:" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="BOTTOM">
+                <font>
+                    <Font name="System Bold" size="12.0"/>
+                </font>
+            </Label>
+            <Label text="Missing Icons:" textAlignment="CENTER" wrapText="true" GridPane.halignment="CENTER"
+                   GridPane.rowIndex="6" GridPane.valignment="BOTTOM">
+                <font>
+                    <Font name="System Bold" size="12.0"/>
+                </font>
+            </Label>
+            <Label fx:id="locLabel" text="\%location%" textAlignment="CENTER" wrapText="true"
+                   GridPane.halignment="CENTER" GridPane.rowIndex="5">
+                <padding>
+                    <Insets left="5.0" right="5.0"/>
+                </padding>
+            </Label>
+            <TreeView fx:id="missingTree" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="7">
+                <GridPane.margin>
+                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                </GridPane.margin>
+            </TreeView>
         </GridPane>
     </center>
+    <bottom>
+        <GridPane BorderPane.alignment="CENTER">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="189.0" minWidth="10.0" prefWidth="90.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="189.0" minWidth="10.0" prefWidth="111.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="99.0" minWidth="6.0" prefWidth="82.0"/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+            </rowConstraints>
+            <Button defaultButton="true" mnemonicParsing="false" onAction="#onClose" prefHeight="25.0" prefWidth="70.0"
+                    text="Close" GridPane.columnIndex="2" GridPane.halignment="CENTER">
+                <GridPane.margin>
+                    <Insets bottom="5.0"/>
+                </GridPane.margin>
+            </Button>
+            <Button mnemonicParsing="false" onAction="#onOpenLoc" prefHeight="25.0" prefWidth="97.0" text="Open Folder"
+                    GridPane.columnIndex="1" GridPane.halignment="CENTER">
+                <GridPane.margin>
+                    <Insets bottom="5.0"/>
+                </GridPane.margin>
+            </Button>
+        </GridPane>
+    </bottom>
 </BorderPane>
