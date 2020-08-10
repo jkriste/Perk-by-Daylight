@@ -30,13 +30,15 @@ Generally, most [releases](https://github.com/glitchedcoder/Perk-by-Daylight/rel
 This is a batch file that will run the program via the Command Line or whatever terminal you may have installed.
 The `.JAR` file is not executable, so it must be ran with `java -jar PerkByDaylight.jar` in the command line or double-clicking the `run.bat` file.
 
+If you get a pop-up when double-clicking the `run.bat` file, click `More Info` and then `Run Anyway`.
+
 ## About
 
 ### Notes
 
 This program is **not a hack client, crack, or exploit** and is not meant to be used while Dead by Daylight is launching or running.
 This software complies with the Dead by Daylight and BHVR [End User License Agreement](https://store.steampowered.com/eula/381210_eula_0), but is in no way promoted, endorsed, or associated with Dead by Daylight, BHVR, or its licensors.
-Improper use of this program could result in a false-positive on EasyAntiCheat's program and could get you falsely banned, just like manually installing icons could.
+Improper use of this program could result in a false-positive on EasyAntiCheat's program and could get you falsely banned, just like manually installing icons could, [as noted by a BHVR community manager](https://forum.deadbydaylight.com/en/discussion/comment/452675/#Comment_452675).
 However, this is highly unlikely when used properly.
 This program does not read, write, or modify game files, including game logs, in any way other than replacing `.PNG` files in their respective places.
 There have been no reports of users getting banned for modifying or replacing in-game icons.
@@ -55,15 +57,18 @@ There have been no reports of users getting banned for modifying or replacing in
 * Multi-threaded workload support, as to not lag UI and for a cleaner experience.
 * A UI-implementation of preferences.
 * Logs being created and stored individually once per run, in its own `logs` folder.
+* A built-in dialog box for those who want to donate.
 
 *Plan to be Added*
+* The ability to create an empty icon pack and add icons to it.
+* The ability to take an existing icon pack and ZIP it to a specific folder.
 * Edit/update already existing icon packs.
 * Get detailed information of the selected icon pack.
-* A built-in dialog box for those who want to donate.
 * Lots of documentation that needs to be added.
 * Updating an old icon with a new icon.
 
 *Might\* be Added*
+* An option to revert to the default Dead by Daylight icons. Saves the hassle of going through Steam and verifying game files.
 * The support for `.rar` files. This might not be possible since RAR files are proprietary and libraries like [JUnRAR](https://github.com/junrar/junrar) do not support WinRAR-compressed files.
 * A workshop for uploading, downloading, and viewing existing icon packs created by the Perk-by-Daylight community.
 * More themes. See [FAQ](https://github.com/glitchedcoder/Perk-by-Daylight#frequently-asked-questions).
@@ -104,7 +109,7 @@ Dependencies are automatically packed into the `.JAR` file and do not need to be
 
 **How can I be sure this isn't a hack?**
 
-The full project, including the code and other resources, is open-sourced and is available for anyone to fork and modify to their heart's desire long as they stick to the [license](https://github.com/glitchedcoder/Perk-by-Daylight/blob/master/LICENSE.md). If you have questions about what the code does or any other resources in this project, feel free to create an issue with the `question` label or send me an email at `glitchedcoder[at]gmail.com`.
+The full project, including the code and other resources, is open-sourced and is available for anyone to fork and modify to their heart's desire as long as they stick to the [license](https://github.com/glitchedcoder/Perk-by-Daylight/blob/master/LICENSE.md). If you have questions about what the code does or any other resources in this project, feel free to create an issue with the `question` label or send me an email at `glitchedcoder[at]gmail.com`.
 
 **Where does the liability fall if someone were to be falsely banned?**
 
@@ -113,6 +118,7 @@ I have to be quite frank by saying that I do not take liability for the false ba
 **How do I create a Perk-by-Daylight-compatible .ZIP file?**
 
 As long as your icon pack has at least one of the following sub-folders (shown below) all that's needed is to go to your main icon pack folder (that contains folders like `Actions`, `Perks`, etc.), right-click it, then select `Send to -> Compressed (zipped) folder`.
+
 ![Layout](https://i.imgur.com/xkG84eC.png)
 
 If the icon pack you downloaded does not have a similar layout or is a `.rar` file, just extract it and go to `Pack -> New Icon Pack -> From Folder` and select the main pack folder (containing `Actions`, `Perks`, etc).
@@ -147,7 +153,7 @@ Yes, actually. If you think you have a theme that's nice-looking and new, feel f
 
 All data that Perk by Daylight caches on your computer can be found by going to `File -> Open PBD Folder` or typing in the Windows search bar `%appdata%` then selecting the `Perk by Daylight` folder. There, you can find files such as `latest.log` which stores the current log if the program is running, `config.json`, which stores your preferences, and three folders:
 * `packs` - This folder stores all icon packs. All icon packs contain a `packmeta.json` file which caches the name and the missing icons of the pack. This is updated every time you open the program.
-* `error logs` - This folder stores any and all occurrences of errors and keeps the diagnostics in the file, formatted `XXXX.XX.XX.XX.XX.XX.XXX.errlog`. The X's represent the time that the error happened, up to the millisecond. Error logs **do not** store any personal information about you or your computer, only what was going on when the error happened and the error itself.
+* `error logs` - This folder stores any and all occurrences of errors and keeps the diagnostics in the file, formatted `XXXX.XX.XX.XX.XX.XX.XXX.log`. The X's represent the time the error occurred, up to the millisecond. Error logs **do not** store any personal information about you or your computer, only what was going on when the error happened and the error itself.
 * `logs` - This folder stores all logs of previous runs of the program, formatted `XXXX.XX.XX.XX.XX.XX.log`. The X's represent the time the log was saved, up to the second.
 * `temp` - This folder is used to evaluate new icon packs before they are added to the `packs` folder. If the new pack is evaluated to not be an icon pack, the icon pack folder and its contents will remain in the `temp` folder until deleted.
 

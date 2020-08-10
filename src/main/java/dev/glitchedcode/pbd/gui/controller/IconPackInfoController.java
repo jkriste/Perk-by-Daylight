@@ -1,7 +1,6 @@
 package dev.glitchedcode.pbd.gui.controller;
 
 import dev.glitchedcode.pbd.PBD;
-import dev.glitchedcode.pbd.dbd.icon.Icon;
 import dev.glitchedcode.pbd.logger.Logger;
 import dev.glitchedcode.pbd.pack.IconPack;
 import dev.glitchedcode.pbd.pack.PackMeta;

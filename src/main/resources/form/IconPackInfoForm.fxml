@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<BorderPane prefHeight="358.0" prefWidth="268.0" xmlns="http://javafx.com/javafx/10.0.2-internal"
+<BorderPane prefHeight="363.0" prefWidth="268.0" xmlns="http://javafx.com/javafx/10.0.2-internal"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="dev.glitchedcode.pbd.gui.controller.IconPackInfoController">
     <center>
@@ -61,7 +61,7 @@
         </GridPane>
     </center>
     <bottom>
-        <GridPane BorderPane.alignment="CENTER">
+        <GridPane prefWidth="268.0" style="-fx-background-color: derive(-fx-base, 15%);" BorderPane.alignment="CENTER">
             <columnConstraints>
                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="189.0" minWidth="10.0" prefWidth="90.0"/>
                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="189.0" minWidth="10.0" prefWidth="111.0"/>
@@ -73,13 +73,13 @@
             <Button defaultButton="true" mnemonicParsing="false" onAction="#onClose" prefHeight="25.0" prefWidth="70.0"
                     text="Close" GridPane.columnIndex="2" GridPane.halignment="CENTER">
                 <GridPane.margin>
-                    <Insets bottom="5.0"/>
+                    <Insets bottom="5.0" top="5.0"/>
                 </GridPane.margin>
             </Button>
             <Button mnemonicParsing="false" onAction="#onOpenLoc" prefHeight="25.0" prefWidth="97.0" text="Open Folder"
                     GridPane.columnIndex="1" GridPane.halignment="CENTER">
                 <GridPane.margin>
-                    <Insets bottom="5.0"/>
+                    <Insets bottom="5.0" top="5.0"/>
                 </GridPane.margin>
             </Button>
         </GridPane>

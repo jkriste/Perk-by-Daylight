@@ -14,7 +14,6 @@ import java.util.Set;
 
 /**
  * Used to represent the 'packmeta.json' file stored in all cached icon packs.
- * Saves time & processing instead of having to re-eval each icon pack at runtime.
  */
 public class PackMeta {
 
@@ -39,7 +38,7 @@ public class PackMeta {
 
     public boolean isMissingIcon(@Nonnull Icon icon) {
         for (String s : missingIcons) {
-            if (icon.getName().equalsIgnoreCase(s))
+            if (icon.asFileName().equals(s))
                 return true;
         }
         return false;
@@ -55,7 +54,7 @@ public class PackMeta {
         for (Icon icon : PBD.getIcons()) {
             if (icon.asFile(folder).exists())
                 continue;
-            missingIcons.add(icon.getName());
+            missingIcons.add(icon.asFileName());
         }
         logger.debug("Re-evaluation of '{}' found {} missing icon(s).", name, missingIcons.size());
     }
@@ -79,7 +78,7 @@ public class PackMeta {
             if (icon.asFile(folder).exists())
                 i++;
             else
-                missingIcons.add(icon.getName());
+                missingIcons.add(icon.asFileName());
         }
         if (i != 0)
             return new PackMeta(folder.getName(), missingIcons);

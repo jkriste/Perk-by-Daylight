@@ -42,10 +42,12 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Executors;
@@ -113,11 +115,11 @@ public class PBD extends Application {
     /**
      * A convenient way to access all icons, sorted by category.
      */
-    private static final Map<IconCategory, Set<Icon>> ICONS_SORTED;
+    private static final Map<IconCategory, List<Icon>> ICONS_SORTED;
     /**
      * The current version of this program.
      */
-    public static final Latest.Version VERSION = new Latest.Version(0, 2, 0);
+    public static final Latest.Version VERSION = new Latest.Version(0, 2, 1);
     /**
      * Used to schedule async tasks.
      */
@@ -134,19 +136,19 @@ public class PBD extends Application {
         ERROR_LOGS_DIR = new File(PBD_DIR, "error logs");
         CONFIG_FILE = new File(PBD_DIR, "config.json");
         ICONS_SORTED = new EnumMap<>(IconCategory.class);
-        ICONS_SORTED.put(IconCategory.ACTION, asSet(Action.values()));
-        ICONS_SORTED.put(IconCategory.ADDON, asSet(Addon.values()));
-        ICONS_SORTED.put(IconCategory.ARCHIVE, asSet(Archive.values()));
-        ICONS_SORTED.put(IconCategory.FAVOR, asSet(Offering.values()));
-        ICONS_SORTED.put(IconCategory.HELP, asSet(Help.values()));
-        ICONS_SORTED.put(IconCategory.HELP_LOADING, asSet(HelpLoading.values()));
-        ICONS_SORTED.put(IconCategory.ITEM, asSet(Item.values()));
-        ICONS_SORTED.put(IconCategory.PERK, asSet(Perk.values()));
-        ICONS_SORTED.put(IconCategory.PORTRAIT, asSet(Portrait.values()));
-        ICONS_SORTED.put(IconCategory.POWER, asSet(Power.values()));
-        ICONS_SORTED.put(IconCategory.STATUS_EFFECT, asSet(StatusEffect.values()));
+        ICONS_SORTED.put(IconCategory.ACTION, asList(Action.values()));
+        ICONS_SORTED.put(IconCategory.ADDON, asList(Addon.values()));
+        ICONS_SORTED.put(IconCategory.ARCHIVE, asList(Archive.values()));
+        ICONS_SORTED.put(IconCategory.FAVOR, asList(Offering.values()));
+        ICONS_SORTED.put(IconCategory.HELP, asList(Help.values()));
+        ICONS_SORTED.put(IconCategory.HELP_LOADING, asList(HelpLoading.values()));
+        ICONS_SORTED.put(IconCategory.ITEM, asList(Item.values()));
+        ICONS_SORTED.put(IconCategory.PERK, asList(Perk.values()));
+        ICONS_SORTED.put(IconCategory.PORTRAIT, asList(Portrait.values()));
+        ICONS_SORTED.put(IconCategory.POWER, asList(Power.values()));
+        ICONS_SORTED.put(IconCategory.STATUS_EFFECT, asList(StatusEffect.values()));
         ICONS = new HashSet<>();
-        for (Set<Icon> icons : ICONS_SORTED.values())
+        for (List<Icon> icons : ICONS_SORTED.values())
             ICONS.addAll(icons);
     }
 
@@ -398,14 +400,14 @@ public class PBD extends Application {
         return Collections.unmodifiableCollection(ICONS);
     }
 
-    public static Map<IconCategory, Set<Icon>> getIconsSorted() {
+    public static Map<IconCategory, List<Icon>> getIconsSorted() {
         return Collections.unmodifiableMap(ICONS_SORTED);
     }
 
     @Nullable
     public static Icon getIcon(@Nonnull String name) {
         for (Icon icon : getIcons()) {
-            if (icon.getName().equalsIgnoreCase(name))
+            if (icon.asFileName().equals(name))
                 return icon;
         }
         LOGGER.warn("Could not find icon with name '{}', might not be registered?", name);
@@ -416,7 +418,7 @@ public class PBD extends Application {
     public static Icon getIconProper(@Nonnull String properName) {
         LOGGER.debug("Getting icon with proper name '{}'", properName);
         for (Icon icon : getIcons()) {
-            if (icon.getProperName().equalsIgnoreCase(properName))
+            if (icon.getProperName().equals(properName))
                 return icon;
         }
         LOGGER.warn("Could not find icon with proper name '{}', might not be registered?", properName);
@@ -442,10 +444,10 @@ public class PBD extends Application {
      * @return A {@link Set}.
      */
     @Nonnull
-    private static <T extends Icon> Set<Icon> asSet(T[] array) {
-        Set<Icon> icons = new HashSet<>();
+    private static <T extends Icon> List<Icon> asList(T[] array) {
+        List<Icon> icons = new ArrayList<>();
         Collections.addAll(icons, array);
-        return Collections.unmodifiableSet(icons);
+        return Collections.unmodifiableList(icons);
     }
 
     /**

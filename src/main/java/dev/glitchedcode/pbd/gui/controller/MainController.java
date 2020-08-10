@@ -171,8 +171,7 @@ public class MainController implements Initializable {
                 progressBar.setVisible(false);
                 setStatus("Deleted " + task.get() + " cached file(s).", Type.NONE);
             } catch (InterruptedException | ExecutionException ex) {
-                logger.warn("CacheDeletionTask failed: {}", ex.getMessage());
-                logger.handleError(Thread.currentThread(), ex);
+                handleError("Cache Deletion Thread", ex);
             }
         });
         setupTask("Cache Deletion Thread", task);
@@ -198,7 +197,26 @@ public class MainController implements Initializable {
      */
     @FXML
     public void onDonate() {
-        // TODO
+        try {
+            FXMLLoader loader = new FXMLLoader(PBD.class.getResource("/form/DonationForm.fxml"));
+            Parent root = loader.load();
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root));
+            DonationController controller = loader.getController();
+            controller.setStage(stage);
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setAlwaysOnTop(true);
+            stage.initStyle(StageStyle.UNIFIED);
+            stage.setTitle("Donate");
+            stage.setResizable(false);
+            stage.getIcons().add(new Image(PBD.class.getResourceAsStream("/pic/pbd_icon.png")));
+            if (CONFIG.isDarkMode())
+                stage.getScene().getStylesheets().add(darkTheme.toExternalForm());
+            stage.show();
+        } catch (IOException e) {
+            logger.warn("Failed to open DonationForm.fxml: {}", e.getMessage());
+            logger.handleError(Thread.currentThread(), e);
+        }
     }
 
     @FXML
@@ -227,11 +245,10 @@ public class MainController implements Initializable {
                 logger.debug("Unzipped file '{}' successfully: {}", file.getName(), newDir.getAbsolutePath());
                 verifyAndInstall(newDir);
             } catch (InterruptedException | ExecutionException e) {
-                logger.warn("Failed to get File: {}", e.getMessage());
-                logger.handleError(Thread.currentThread(), e);
+                handleError("Unzipper Thread", e);
             }
         });
-        setupTask("Icon Pack Unzipper", task);
+        setupTask("Unzipper Thread", task);
     }
 
     @FXML
@@ -258,11 +275,10 @@ public class MainController implements Initializable {
                 logger.debug("Moved file '{}' successfully: {}", file.getName(), newDir.getAbsolutePath());
                 verifyAndInstall(newDir);
             } catch (InterruptedException | ExecutionException e) {
-                logger.warn("Failed to get File: {}", e.getMessage());
-                logger.handleError(Thread.currentThread(), e);
+                handleError("File Copier Thread", e);
             }
         });
-        setupTask("Icon Pack File Copier", task);
+        setupTask("File Copier Thread", task);
     }
 
     @FXML
@@ -360,8 +376,7 @@ public class MainController implements Initializable {
                     setDisabled(false);
                     setStatus("Successfully installed icon pack '" + pack.getMeta().getName() + "'.", Type.NONE);
                 } catch (InterruptedException | ExecutionException e) {
-                    logger.warn("Failed to install icon pack '{}': {}", name, e.getMessage());
-                    logger.handleError(Thread.currentThread(), e);
+                    handleError("Installer Thread", e);
                 }
             });
             setupTask("Icon Pack Installer", task);
@@ -394,7 +409,7 @@ public class MainController implements Initializable {
                 progressBar.setVisible(false);
                 setDisabled(false);
             });
-            setupTask("Icon Pack Disposer", task);
+            setupTask("Pack Deletion Thread", task);
         }
     }
 
@@ -445,7 +460,6 @@ public class MainController implements Initializable {
         logger.debug("Clicked on: {}", name);
         IconPack pack = IconPack.fromName(name);
         if (pack != null) {
-            packInfoMenu.setVisible(true);
             installIconPack.setVisible(!name.equalsIgnoreCase(INSTALLED));
             deleteIconPack.setVisible(!name.equalsIgnoreCase(INSTALLED));
             setPerkTree(pack);
@@ -500,12 +514,11 @@ public class MainController implements Initializable {
                     progressBar.setVisible(false);
                     setDisabled(false);
                 } catch (ExecutionException | InterruptedException e) {
-                    logger.warn("Failed to move folder: {}", e.getMessage());
-                    logger.handleError(Thread.currentThread(), e);
+                    handleError("Verifier Thread", e);
                 }
             });
             setStatus("Evaluation complete, moving files...", Type.NONE);
-            setupTask("Icon Pack Verifier", task);
+            setupTask("Verifier Thread", task);
         } else {
             setStatus("'" + dir.getName() + "' could not be eval'd as an icon pack.", Type.WARN);
             setDisabled(false);
@@ -535,30 +548,35 @@ public class MainController implements Initializable {
         if (pack == null) {
             perkTree.setRoot(null);
             iconMenu.setVisible(false);
-        } else
+            packInfoMenu.setVisible(false);
+        } else {
+            packInfoMenu.setVisible(true);
             perkTree.setRoot(pack.getIcons());
+        }
         perkTree.refresh();
     }
 
     private void setupTask(@Nonnull String name, @Nonnull Task<?> task) {
-        task.setOnFailed(event -> {
-            Throwable throwable = task.getException();
-            if (throwable == null)
-                logger.error("Task '{}' failed but exception thrown is null.", name);
-            else {
-                logger.warn("Encountered an exception whilst running task '{}': {}", name, throwable.getMessage());
-                logger.handleError(Thread.currentThread(), throwable);
-            }
-            progressBar.setVisible(false);
-            setDisabled(false);
-            setStatus("An error occurred during task '" + name + "', check logs.", Type.ERROR);
-        });
+        task.setOnFailed(event -> handleError(name, task.getException()));
         progressBar.progressProperty().bind(task.progressProperty());
         progressBar.setVisible(true);
         setDisabled(true);
         Thread thread = new Thread(task);
         thread.setName(name);
         thread.start();
+    }
+
+    @ParametersAreNonnullByDefault
+    private void handleError(@Nonnull String name, @Nullable Throwable e) {
+        setStatus("An error occurred during task '" + name + "', check logs.", Type.ERROR);
+        progressBar.setVisible(false);
+        setDisabled(false);
+        if (e == null)
+            logger.error("Task '{}' failed but exception thrown is null.", name);
+        else {
+            logger.warn("An error occurred during task '{}': {}", name, e.getMessage());
+            logger.handleError(Thread.currentThread(), e);
+        }
     }
 
     @Nullable

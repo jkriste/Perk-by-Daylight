@@ -75,6 +75,7 @@ public class IconPack {
                 logger.info("Recreated packmeta.json for icon pack {}.", this.meta.getName());
         }
         JsonWriter writer = new JsonWriter(new FileWriter(meta));
+        writer.setLenient(true);
         gson.toJson(this.meta, PackMeta.class, writer);
         writer.flush();
         writer.close();

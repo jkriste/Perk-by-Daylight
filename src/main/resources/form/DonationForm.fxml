@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="198.0"
+            prefWidth="484.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="dev.glitchedcode.pbd.gui.controller.DonationController">
+    <center>
+        <GridPane BorderPane.alignment="CENTER">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="376.0" minWidth="10.0" prefWidth="323.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="237.0" minWidth="10.0" prefWidth="161.0"/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+            </rowConstraints>
+            <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true"
+                       GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                <Image url="@../pic/qrcode.png"/>
+                <GridPane.margin>
+                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                </GridPane.margin>
+            </ImageView>
+            <Label text="Hey there!" GridPane.halignment="CENTER" GridPane.valignment="TOP">
+                <font>
+                    <Font name="System Bold" size="22.0"/>
+                </font>
+            </Label>
+            <Label text="Thanks for considering to donate. All the work I do is funded by you. By clicking the Donate button below you'll be redirected to PayPal. Optionally, you can also scan the QR code on the right to be taken to the same link."
+                   textAlignment="CENTER" wrapText="true">
+                <font>
+                    <Font size="14.0"/>
+                </font>
+                <GridPane.margin>
+                    <Insets left="5.0" right="5.0"/>
+                </GridPane.margin>
+            </Label>
+            <Label text="As always, donating is optional." textAlignment="CENTER" underline="true"
+                   GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
+                <font>
+                    <Font name="System Italic" size="15.0"/>
+                </font>
+            </Label>
+        </GridPane>
+    </center>
+    <bottom>
+        <GridPane prefHeight="29.0" prefWidth="474.0" style="-fx-background-color: derive(-fx-base, 15%);"
+                  BorderPane.alignment="CENTER">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="307.0" minWidth="10.0" prefWidth="307.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="255.0" minWidth="10.0" prefWidth="87.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="178.0" minWidth="10.0" prefWidth="90.0"/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints maxHeight="33.0" minHeight="10.0" prefHeight="33.0" vgrow="SOMETIMES"/>
+            </rowConstraints>
+            <Button defaultButton="true" mnemonicParsing="false" onAction="#onDonate" prefHeight="25.0" prefWidth="78.0"
+                    text="Donate..." GridPane.columnIndex="1" GridPane.halignment="CENTER">
+                <GridPane.margin>
+                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                </GridPane.margin>
+            </Button>
+            <Button mnemonicParsing="false" onAction="#onClose" prefHeight="25.0" prefWidth="78.0" text="Close"
+                    GridPane.columnIndex="2" GridPane.halignment="CENTER">
+                <GridPane.margin>
+                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                </GridPane.margin>
+            </Button>
+            <BorderPane.margin>
+                <Insets/>
+            </BorderPane.margin>
+        </GridPane>
+    </bottom>
+</BorderPane>

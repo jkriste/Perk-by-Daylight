@@ -9,7 +9,8 @@
             prefWidth="300.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="dev.glitchedcode.pbd.gui.controller.PreferenceController">
     <bottom>
-        <GridPane BorderPane.alignment="CENTER">
+        <GridPane prefHeight="29.0" prefWidth="300.0" style="-fx-background-color: derive(-fx-base, 15%);"
+                  BorderPane.alignment="CENTER">
             <columnConstraints>
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
@@ -20,12 +21,17 @@
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
             </rowConstraints>
             <Button cancelButton="true" mnemonicParsing="false" onAction="#onCancel" prefHeight="25.0" prefWidth="69.0"
-                    text="Cancel" GridPane.columnIndex="3" GridPane.halignment="RIGHT"/>
+                    text="Cancel" GridPane.columnIndex="3" GridPane.halignment="RIGHT">
+                <GridPane.margin>
+                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                </GridPane.margin>
+            </Button>
             <Button defaultButton="true" mnemonicParsing="false" onAction="#onSave" prefHeight="25.0" prefWidth="65.0"
-                    text="Save" GridPane.columnIndex="2" GridPane.halignment="CENTER"/>
-            <padding>
-                <Insets bottom="5.0" right="5.0"/>
-            </padding>
+                    text="Save" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                <GridPane.margin>
+                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                </GridPane.margin>
+            </Button>
         </GridPane>
     </bottom>
     <center>

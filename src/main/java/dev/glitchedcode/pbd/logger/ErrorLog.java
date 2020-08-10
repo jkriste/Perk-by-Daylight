@@ -20,7 +20,7 @@ public class ErrorLog {
         logger.error(Ansi.Color.RED, "Uncaught exception " + throwable.getClass().getName()
                 + " in thread \"" + thread.getName() + "\": " + throwable.getMessage());
         logger.debug(Ansi.Color.RED, "Stack trace:\n" + stacktrace);
-        File log = new File(PBD.ERROR_LOGS_DIR, timeLog() + ".errlog");
+        File log = new File(PBD.ERROR_LOGS_DIR, timeLog() + ".log");
         try {
             if (log.createNewFile())
                 logger.debug("Created error log \"" + log.getName() + "\".");
