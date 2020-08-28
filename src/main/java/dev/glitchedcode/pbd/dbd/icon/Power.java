@@ -8,6 +8,9 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 import static dev.glitchedcode.pbd.dbd.Killer.*;
 
+/**
+ * Used to represent all of the icons in the "Powers" category.
+ */
 public enum Power implements Icon {
 
     BUBBAS_CHAINSAW("bubbasChainsaw", "Bubbas Chainsaw", "Cannibal", CANNIBAL),

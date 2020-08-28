@@ -26,11 +26,12 @@ public interface Icon {
     String getName();
 
     /**
-     * Gets the prefix for the {@link Icon}.
+     * Gets the prefix/suffix for the {@link Icon}.
      * <br />
      * e.g. "iconPerks_NAMEHERE"
      *
      * @return The prefix for the {@link Icon}.
+     * @see #isPrefix()
      */
     @Nonnull
     String getFileAdditive();

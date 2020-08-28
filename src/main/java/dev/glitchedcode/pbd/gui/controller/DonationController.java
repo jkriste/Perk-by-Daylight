@@ -21,6 +21,11 @@ public class DonationController implements Initializable {
     private static final String LINK = "https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=kristensenjl" +
             "%40my.gvltec.edu&item_name=Making+free+software+for+all.&currency_code=USD&source=url";
 
+    /**
+     * Sets the stage of the form.
+     *
+     * @param stage The stage.
+     */
     void setStage(@Nonnull Stage stage) {
         this.stage = stage;
     }
@@ -30,6 +35,9 @@ public class DonationController implements Initializable {
         // ignore
     }
 
+    /**
+     * Called when the "Donate" button is clicked.
+     */
     @FXML
     public void onDonate() {
         try {
@@ -41,6 +49,9 @@ public class DonationController implements Initializable {
         }
     }
 
+    /**
+     * Called when the "Close" button is clicked.
+     */
     @FXML
     public void onClose() {
         stage.close();

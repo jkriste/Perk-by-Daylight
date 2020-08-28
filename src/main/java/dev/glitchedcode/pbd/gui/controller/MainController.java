@@ -5,14 +5,16 @@ import dev.glitchedcode.pbd.dbd.icon.Icon;
 import dev.glitchedcode.pbd.gui.task.CacheDeletionTask;
 import dev.glitchedcode.pbd.gui.task.CopyTask;
 import dev.glitchedcode.pbd.gui.task.DeleteTask;
+import dev.glitchedcode.pbd.gui.task.DownloadTask;
 import dev.glitchedcode.pbd.gui.task.IconInstallTask;
-import dev.glitchedcode.pbd.gui.task.MoveTask;
 import dev.glitchedcode.pbd.gui.task.UnzipTask;
+import dev.glitchedcode.pbd.gui.task.UpdateTask;
 import dev.glitchedcode.pbd.json.Config;
 import dev.glitchedcode.pbd.json.LatestRelease;
 import dev.glitchedcode.pbd.logger.Logger;
 import dev.glitchedcode.pbd.pack.IconPack;
 import dev.glitchedcode.pbd.pack.PackMeta;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -67,6 +69,7 @@ public class MainController implements Initializable {
     @FXML private ListView<String> packList;
 
     private Stage stage;
+    private ScheduledFuture<?> updateTask;
     private ScheduledFuture<?> statusTask;
     private static final Logger logger = PBD.getLogger();
     private static final Config CONFIG = PBD.getConfig();
@@ -110,8 +113,17 @@ public class MainController implements Initializable {
         packList.setEditable(true);
         packList.setCellFactory(TextFieldListCell.forListView());
         logger.info("Initialized JavaFX form successfully.");
+        this.updateTask = PBD.getService().schedule(() -> {
+            if (CONFIG.isOfflineMode() || CONFIG.doesIgnoreUpdates())
+                return;
+            LatestRelease.refresh();
+            Platform.runLater(this::onCheckUpdate);
+        }, 2, TimeUnit.SECONDS);
     }
 
+    /**
+     * Called when the "Preferences..." menu item is clicked.
+     */
     @FXML
     public void onPreferences() {
         try {
@@ -145,17 +157,38 @@ public class MainController implements Initializable {
             setStatus("Offline mode is enabled, cannot check for update.", Type.WARN);
             return;
         }
-        status.setText("Checking for update...");
-        status.setVisible(true);
-        if (LatestRelease.checkUpdate()) {
-            setStatus("Update available, downloading...", Type.NONE);
-            new Thread(() -> LatestRelease.downloadUpdate(this, () -> {
-                setDisabled(false);
-                logger.info("Download completed. Delete the old JAR and rename the new one.");
-                PBD.close(0);
-            })).start();
-        } else
-            setStatus("Latest version is installed.", Type.NONE);
+        if (!updateTask.isDone())
+            return;
+        setStatus("Checking for update...", Type.NONE);
+        UpdateTask task = new UpdateTask();
+        task.setOnSucceeded(e -> {
+            try {
+                boolean success = task.get();
+                if (success) {
+                    FXMLLoader loader = new FXMLLoader(PBD.class.getResource("/form/UpdateForm.fxml"));
+                    Parent root = loader.load();
+                    Stage stage = new Stage();
+                    stage.setScene(new Scene(root));
+                    UpdateController controller = loader.getController();
+                    controller.setStage(stage, this);
+                    stage.initModality(Modality.APPLICATION_MODAL);
+                    stage.setAlwaysOnTop(true);
+                    stage.initStyle(StageStyle.UNIFIED);
+                    stage.setTitle("Update Available");
+                    stage.setResizable(false);
+                    stage.getIcons().add(new Image(PBD.class.getResourceAsStream("/pic/pbd_icon.png")));
+                    if (CONFIG.isDarkMode())
+                        stage.getScene().getStylesheets().add(darkTheme.toExternalForm());
+                    stage.show();
+                } else {
+                    setStatus("Latest version " + PBD.VERSION.toString() + " installed.", Type.NONE);
+                    setDisabled(false);
+                }
+            } catch (InterruptedException | ExecutionException | IOException ex) {
+                handleError("Update Task", ex);
+            }
+        });
+        setupTask("Update Task", task, false);
     }
 
     /**
@@ -219,6 +252,9 @@ public class MainController implements Initializable {
         }
     }
 
+    /**
+     * Called when the "From ZIP..." menu item is clicked.
+     */
     @FXML
     public void onNewPackZip() {
         setDisabled(true);
@@ -251,6 +287,9 @@ public class MainController implements Initializable {
         setupTask("Unzipper Thread", task);
     }
 
+    /**
+     * Called when the "From Folder..." menu item is clicked.
+     */
     @FXML
     public void onNewPackFolder() {
         setDisabled(true);
@@ -267,7 +306,7 @@ public class MainController implements Initializable {
             setDisabled(false);
             return;
         }
-        CopyTask task = new CopyTask(file, new File(PBD.getTempDir(), file.getName()));
+        CopyTask task = new CopyTask(file, new File(PBD.getTempDir(), file.getName()), false);
         setStatus("Copying '" + file.getName() + "' to 'temp' directory.", Type.NONE);
         task.setOnSucceeded(event -> {
             try {
@@ -281,6 +320,9 @@ public class MainController implements Initializable {
         setupTask("File Copier Thread", task);
     }
 
+    /**
+     * Called when the "Icon Pack Info..." menu option is clicked.
+     */
     @FXML
     public void onPackInfo() {
         String name = packList.getSelectionModel().getSelectedItem();
@@ -413,16 +455,47 @@ public class MainController implements Initializable {
         }
     }
 
+    /**
+     * Called when the "Install Icon" menu option is clicked.
+     */
     @FXML
     public void onInstallIcon() {
-        
+        String name = packList.getSelectionModel().getSelectedItem();
+        if (name == null || name.equalsIgnoreCase(INSTALLED))
+            return;
+        IconPack pack = IconPack.fromName(name);
+        if (pack == null) {
+            logger.warn("Failed to get icon pack from name '{}'", name);
+            constructIconPacks();
+            return;
+        }
+        String iconName = perkTree.getSelectionModel().getSelectedItem().getValue();
+        Icon icon = PBD.getIconProper(iconName);
+        if (icon == null || pack.getMeta().isMissingIcon(icon)) {
+            logger.warn("Failed to get an icon with the name '{}'/icon is missing.", iconName);
+            constructIconPacks();
+            return;
+        }
+        IconInstallTask task = new IconInstallTask(pack, icon);
+        task.setOnSucceeded(e -> {
+            setStatus("Successfully installed icon '" + iconName + "' from icon pack '" + name + "'.", Type.NONE);
+            progressBar.setVisible(false);
+            setDisabled(false);
+        });
+        setupTask("Icon Pack Installer", task);
     }
 
+    /**
+     * Called when the "Update Icon..." menu option is clicked.
+     */
     @FXML
     public void onUpdateIcon() {
 
     }
 
+    /**
+     * Called when the icon perk tree is clicked on.
+     */
     @FXML
     public void onPerkTree() {
         String iconName = packList.getSelectionModel().getSelectedItem();
@@ -450,6 +523,9 @@ public class MainController implements Initializable {
             iconMenu.setVisible(false);
     }
 
+    /**
+     * Called when the icon pack list is clicked on.
+     */
     @FXML
     public void onPackList() {
         String name = packList.getSelectionModel().getSelectedItem();
@@ -467,22 +543,40 @@ public class MainController implements Initializable {
             logger.warn("Failed to get icon pack with name '{}', selected via packList.", name);
     }
 
+    /**
+     * Called when the "Dark Theme" menu option is clicked.
+     */
     @FXML
     public void onDarkMode() {
         setMode(true);
     }
 
+    /**
+     * Called when the "Light Theme" menu option is clicked.
+     */
     @FXML
     public void onLightMode() {
         setMode(false);
     }
 
+    /**
+     * Disables the UI.
+     *
+     * @param disabled True to disable, false to enable.
+     */
     public void setDisabled(boolean disabled) {
         perkTree.setDisable(disabled);
         packList.setDisable(disabled);
         menuBar.setDisable(disabled);
     }
 
+    /**
+     * Sets the status bar with the given status and icon type.
+     *
+     * @param status The status.
+     * @param type The type of icon to display with the message.
+     * @see Type
+     */
     public void setStatus(@Nonnull String status, @Nonnull Type type) {
         this.status.setGraphic(type.asImageView());
         this.status.setText(status);
@@ -495,11 +589,18 @@ public class MainController implements Initializable {
                 CONFIG.getStatusDuration(), TimeUnit.SECONDS);
     }
 
+    /**
+     * Verifies and installs the icon pack.
+     * <br />
+     * The given directory should be in the 'temp' folder.
+     *
+     * @param dir The directory.
+     */
     private void verifyAndInstall(@Nonnull File dir) {
         if (!dir.isDirectory())
             throw new IllegalArgumentException("Given file '" + dir.getName() + "' is not directory.");
         if (PackMeta.eval(dir)) {
-            MoveTask task = new MoveTask(dir, PBD.getPacksDir());
+            CopyTask task = new CopyTask(dir, PBD.getPacksDir(), true);
             task.setOnSucceeded(event -> {
                 try {
                     IconPack pack = IconPack.of(task.get());
@@ -527,6 +628,9 @@ public class MainController implements Initializable {
         }
     }
 
+    /**
+     * Constructs the icon packs for the packs list.
+     */
     private void constructIconPacks() {
         packList.getItems().clear();
         IconPack installed = IconPack.fromName(INSTALLED);
@@ -544,6 +648,11 @@ public class MainController implements Initializable {
         installIconPack.setVisible(false);
     }
 
+    /**
+     * Sets the perk tree item to the given {@link IconPack}'s tree item.
+     *
+     * @param pack The selected icon pack.
+     */
     private void setPerkTree(@Nullable IconPack pack) {
         if (pack == null) {
             perkTree.setRoot(null);
@@ -556,17 +665,47 @@ public class MainController implements Initializable {
         perkTree.refresh();
     }
 
+    /**
+     * Does {@link #setupTask(String, Task, boolean)} but sets the progress bar visible.
+     *
+     * @param name The name of the task.
+     * @param task The task instance.
+     * @see #setupTask(String, Task, boolean)
+     */
     private void setupTask(@Nonnull String name, @Nonnull Task<?> task) {
+        setupTask(name, task, true);
+    }
+
+    /**
+     * Does boilerplate code for tasks:
+     * <ul>
+     *     <li>Handles errors on task failure.</li>
+     *     <li>Binds the progress property of the task to the progress bar.</li>
+     *     <li>Sets the progress bar visible.</li>
+     *     <li>Disables the main UI.</li>
+     *     <li>Creates a thread, sets the name, and starts it.</li>
+     * </ul>
+     *
+     * @param name The name of the task.
+     * @param task The task instance.
+     * @param barVisible True if the progress bar should be visible.
+     */
+    private void setupTask(@Nonnull String name, @Nonnull Task<?> task, boolean barVisible) {
         task.setOnFailed(event -> handleError(name, task.getException()));
         progressBar.progressProperty().bind(task.progressProperty());
-        progressBar.setVisible(true);
+        progressBar.setVisible(barVisible);
         setDisabled(true);
         Thread thread = new Thread(task);
         thread.setName(name);
         thread.start();
     }
 
-    @ParametersAreNonnullByDefault
+    /**
+     * Handles errors for tasks when they fail.
+     *
+     * @param name The name of the task.
+     * @param e The exception thrown.
+     */
     private void handleError(@Nonnull String name, @Nullable Throwable e) {
         setStatus("An error occurred during task '" + name + "', check logs.", Type.ERROR);
         progressBar.setVisible(false);
@@ -579,6 +718,13 @@ public class MainController implements Initializable {
         }
     }
 
+    /**
+     * Gets the image for the given {@link Icon} and {@link IconPack}.
+     *
+     * @param icon The type of icon to display.
+     * @param pack The icon pack to get the image from.
+     * @return The image for the given {@link Icon} and {@link IconPack}, or null.
+     */
     @Nullable
     @ParametersAreNonnullByDefault
     private Image toImage(Icon icon, IconPack pack) {
@@ -600,6 +746,31 @@ public class MainController implements Initializable {
         return null;
     }
 
+    /**
+     * Called when the "Update" button is clicked on the Update form.
+     */
+    void startDownload() {
+        DownloadTask task = new DownloadTask();
+        task.setOnSucceeded(e -> {
+            try {
+                boolean success = task.get();
+                if (!success)
+                    setStatus("Download failed, please check logs.", Type.ERROR);
+                else
+                    PBD.close(1);
+                setDisabled(false);
+                progressBar.setVisible(false);
+            } catch (ExecutionException | InterruptedException ex) {
+                handleError("Download Thread", ex);
+            }
+        });
+        setStatus("Downloading new update...", Type.NONE);
+        setupTask("Download Thread", task);
+    }
+
+    /**
+     * Distinguishes the different icons that can be shown on the status bar.
+     */
     public enum Type {
 
         NONE(null),

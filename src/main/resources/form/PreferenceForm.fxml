@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
-
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="305.0" minWidth="300.0" prefHeight="415.0"
-            prefWidth="300.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1"
+            prefWidth="300.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="dev.glitchedcode.pbd.gui.controller.PreferenceController">
     <bottom>
         <GridPane prefHeight="29.0" prefWidth="300.0" style="-fx-background-color: derive(-fx-base, 15%);"
@@ -126,7 +131,7 @@
                     <Insets left="5.0" top="5.0"/>
                 </padding>
             </Label>
-            <Label text="Sets whether the program will run in offline mode, will not check for updates."
+            <Label text="Sets whether the program will run in offline mode, cannot check for updates."
                    textFill="#8a8a8a" wrapText="true" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
                 <padding>
                     <Insets left="5.0"/>

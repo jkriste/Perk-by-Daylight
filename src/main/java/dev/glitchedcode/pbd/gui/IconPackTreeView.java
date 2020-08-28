@@ -18,6 +18,12 @@ public class IconPackTreeView {
     private IconPackTreeView() {
     }
 
+    /**
+     * Analyzes the given {@link IconPack} and constructs a {@link TreeItem} based on existing icons.
+     *
+     * @param iconPack The icon pack to analyze.
+     * @return A {@link TreeItem} based on existing icons.
+     */
     public static TreeItem<String> of(@Nonnull IconPack iconPack) {
         PackMeta meta = iconPack.getMeta();
         TreeItem<String> root = new TreeItem<>(meta.getName());
@@ -39,6 +45,12 @@ public class IconPackTreeView {
         return root;
     }
 
+    /**
+     * Analyzes the given {@link IconPack} and constructs a {@link TreeItem} based on missing icons.
+     *
+     * @param iconPack The icon pack to analyze.
+     * @return A {@link TreeItem} based on missing icons.
+     */
     public static TreeItem<String> ofMissing(@Nonnull IconPack iconPack) {
         PackMeta meta = iconPack.getMeta();
         TreeItem<String> root = new TreeItem<>("Missing");

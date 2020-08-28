@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="138.0"
+            prefWidth="309.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="dev.glitchedcode.pbd.gui.controller.UpdateController">
+    <bottom>
+        <GridPane style="-fx-background-color: derive(-fx-base, 15%);" BorderPane.alignment="CENTER">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="281.0" minWidth="10.0" prefWidth="113.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="281.0" minWidth="10.0" prefWidth="32.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="240.0" minWidth="10.0" prefWidth="75.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="155.0" minWidth="10.0" prefWidth="89.0"/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+            </rowConstraints>
+            <Button mnemonicParsing="false" onAction="#onGitHub" text="View on GitHub" GridPane.halignment="CENTER"
+                    GridPane.valignment="CENTER">
+                <GridPane.margin>
+                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                </GridPane.margin>
+            </Button>
+            <Button defaultButton="true" mnemonicParsing="false" onAction="#onUpdate" prefHeight="25.0" prefWidth="65.0"
+                    text="Update" GridPane.columnIndex="2" GridPane.halignment="CENTER">
+                <GridPane.margin>
+                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                </GridPane.margin>
+            </Button>
+            <SplitMenuButton mnemonicParsing="false" onAction="#onCancel" text="Cancel" GridPane.columnIndex="3"
+                             GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                <items>
+                    <MenuItem mnemonicParsing="false" onAction="#onIgnore" text="Ignore"/>
+                </items>
+            </SplitMenuButton>
+        </GridPane>
+    </bottom>
+    <center>
+        <Label alignment="CENTER" contentDisplay="CENTER" text="An update is available&#10;for Perk by Daylight."
+               textAlignment="CENTER" wrapText="true" BorderPane.alignment="CENTER">
+            <font>
+                <Font size="14.0"/>
+            </font>
+            <BorderPane.margin>
+                <Insets top="5.0"/>
+            </BorderPane.margin>
+        </Label>
+    </center>
+    <left>
+        <ImageView fitHeight="92.0" fitWidth="99.0" pickOnBounds="true" preserveRatio="true"
+                   BorderPane.alignment="CENTER">
+            <Image url="@../pic/pbd_icon.png"/>
+            <BorderPane.margin>
+                <Insets left="5.0"/>
+            </BorderPane.margin>
+        </ImageView>
+    </left>
+</BorderPane>

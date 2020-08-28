@@ -6,6 +6,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
+/**
+ * Used to represent all icons in the "HelpLoading" category.
+ */
 public enum HelpLoading implements Icon {
 
     ADDONS("addons", "Addons"),

@@ -5,6 +5,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Used to represent all icon categories.
+ * <br />
+ * This will probably be implemented better in the future.
+ */
 public enum IconCategory {
 
     ACTION("Actions"),

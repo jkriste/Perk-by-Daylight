@@ -6,6 +6,11 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
+/**
+ * Used to represent all of the icons in the "Actions" category.
+ * <br />
+ * Yes, there is only supposed to be 1. Don't ask me why.
+ */
 public enum Action implements Icon {
 
     CARRIED_BODY("carriedBody", "Carried Body");

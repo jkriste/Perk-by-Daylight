@@ -9,6 +9,9 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import static dev.glitchedcode.pbd.dbd.Survivor.*;
 import static dev.glitchedcode.pbd.dbd.Killer.*;
 
+/**
+ * Used to represent all of the icons in the "Perks" category.
+ */
 public enum Perk implements Icon {
 
     BUCKLE_UP("buckleUp", "Buckle Up", "Ash", ASH),

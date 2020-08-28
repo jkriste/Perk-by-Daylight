@@ -15,6 +15,9 @@ import java.util.Set;
 
 import static dev.glitchedcode.pbd.dbd.Killer.*;
 
+/**
+ * Used to represent all of the icons in the "ItemAddons" category.
+ */
 public enum Addon implements Icon {
 
     AWARDWINNING_CHILI("awardwinningChili", "Awardwinning Chili", "Cannibal", CANNIBAL),

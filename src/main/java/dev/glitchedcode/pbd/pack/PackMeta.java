@@ -27,15 +27,31 @@ public class PackMeta {
         this.missingIcons = missingIcons;
     }
 
+    /**
+     * Gets the name of the icon pack.
+     *
+     * @return The name of the icon pack.
+     */
     @Nonnull
     public String getName() {
         return name;
     }
 
+    /**
+     * Gets a {@link Set} of missing icon names, formatted as a file.
+     *
+     * @return A {@link Set} of missing icon names.
+     */
     public Set<String> getMissingIcons() {
         return Collections.unmodifiableSet(missingIcons);
     }
 
+    /**
+     * Checks if the given icon is missing.
+     *
+     * @param icon The icon to check.
+     * @return True if the given icon is missing.
+     */
     public boolean isMissingIcon(@Nonnull Icon icon) {
         for (String s : missingIcons) {
             if (icon.asFileName().equals(s))
@@ -44,10 +60,20 @@ public class PackMeta {
         return false;
     }
 
+    /**
+     * Local method to set the name of the icon pack.
+     *
+     * @param name The name.
+     */
     void setName(@Nonnull String name) {
         this.name = name;
     }
 
+    /**
+     * Re-evaluates the given folder, which should be an icon pack directory.
+     *
+     * @param folder An icon pack directory to re-evaluate.
+     */
     void reeval(@Nonnull File folder) {
         assert (folder.isDirectory());
         missingIcons.clear();
@@ -88,6 +114,13 @@ public class PackMeta {
         return null;
     }
 
+    /**
+     * Evaluates the given folder to see if it has any valid icons.
+     *
+     * @param folder The folder to evaluate.
+     * @return True if the given folder is evaluated as an icon pack.
+     * @throws IllegalArgumentException Thrown if the given file is not a directory.
+     */
     public static boolean eval(@Nonnull File folder) {
         logger.debug("Evaluating folder '{}' as an icon pack...", folder.getName());
         int i = 0;

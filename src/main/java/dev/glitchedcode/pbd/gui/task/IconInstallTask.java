@@ -12,6 +12,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 
+/**
+ * Used to either install an entire {@link IconPack} or a single {@link Icon}.
+ */
 public class IconInstallTask extends Task<Integer> {
 
     private final Icon icon;

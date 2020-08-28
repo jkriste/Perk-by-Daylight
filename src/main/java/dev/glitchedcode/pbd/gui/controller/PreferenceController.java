@@ -28,6 +28,11 @@ public class PreferenceController implements Initializable {
     private static final Logger logger = PBD.getLogger();
     private static final Config CONFIG = PBD.getConfig();
 
+    /**
+     * Sets the stage of the form.
+     *
+     * @param stage The stage.
+     */
     void setStage(@Nonnull Stage stage) {
         this.stage = stage;
     }
@@ -44,6 +49,9 @@ public class PreferenceController implements Initializable {
         delLogCheck.setSelected(CONFIG.deleteLogs());
     }
 
+    /**
+     * Called when the "Save" button is pressed.
+     */
     @FXML
     public void onSave() {
         CONFIG.setDebug(debugCheck.isSelected());
@@ -57,6 +65,9 @@ public class PreferenceController implements Initializable {
         stage.close();
     }
 
+    /**
+     * Called when the "Cancel" button is pressed.
+     */
     public void onCancel() {
         stage.close();
     }

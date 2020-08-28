@@ -2,6 +2,9 @@ package dev.glitchedcode.pbd.dbd;
 
 import javax.annotation.Nonnull;
 
+/**
+ * Used to represent all of the survivors in the game.
+ */
 public enum Survivor implements Character {
 
     DWIGHT("Dwight Fairfield"),

@@ -6,6 +6,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
+/**
+ * Used to represent all the icons in the "Items" category.
+ */
 public enum Item implements Icon {
 
     PARTY_POPPER("partyPopper", "Party Popper", "Anniversary"),

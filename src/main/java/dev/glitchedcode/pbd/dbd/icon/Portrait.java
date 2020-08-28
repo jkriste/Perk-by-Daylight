@@ -8,6 +8,9 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import static dev.glitchedcode.pbd.dbd.Killer.*;
 import static dev.glitchedcode.pbd.dbd.Survivor.*;
 
+/**
+ * Used to represent all of the icons in the "CharPortraits" category.
+ */
 public enum Portrait implements Icon {
 
     MS2("MS2", "Ash", ASH),

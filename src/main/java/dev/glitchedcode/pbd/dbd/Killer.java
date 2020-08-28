@@ -2,6 +2,9 @@ package dev.glitchedcode.pbd.dbd;
 
 import javax.annotation.Nonnull;
 
+/**
+ * Used to represent all killers in the game.
+ */
 public enum Killer implements Character {
 
     TRAPPER("Trapper"),

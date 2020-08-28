@@ -16,6 +16,9 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
+/**
+ * Used to properly unzip an {@link dev.glitchedcode.pbd.pack.IconPack}.
+ */
 public class UnzipTask extends Task<File> {
 
     private final File zipFile;
@@ -133,6 +136,13 @@ public class UnzipTask extends Task<File> {
         return count;
     }
 
+    /**
+     * Extracts the file from the {@link ZipInputStream} and puts its contents into the file.
+     *
+     * @param in The zip input stream.
+     * @param file The file to put its contents into.
+     * @throws IOException Thrown if the {@link FileOutputStream} cannot be opened/written to.
+     */
     @ParametersAreNonnullByDefault
     private void extract(ZipInputStream in, File file) throws IOException {
         BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file));

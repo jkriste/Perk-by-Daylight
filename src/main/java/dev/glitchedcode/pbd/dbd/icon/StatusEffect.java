@@ -6,6 +6,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
+/**
+ * Used to represent all of the icons in the "StatusEffects" category.
+ */
 public enum StatusEffect implements Icon {
 
     BLEEDING("bleeding", "Bleeding"),

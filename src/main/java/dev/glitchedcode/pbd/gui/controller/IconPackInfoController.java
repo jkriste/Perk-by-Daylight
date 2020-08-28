@@ -28,10 +28,20 @@ public class IconPackInfoController implements Initializable {
     private IconPack iconPack;
     private static final Logger logger = PBD.getLogger();
 
+    /**
+     * Sets the stage of the form.
+     *
+     * @param stage The stage.
+     */
     void setStage(@Nonnull Stage stage) {
         this.stage = stage;
     }
 
+    /**
+     * Sets the icon pack to load into the form.
+     *
+     * @param iconPack The icon pack.
+     */
     void setIconPack(@Nonnull IconPack iconPack) {
         this.iconPack = iconPack;
         PackMeta meta = iconPack.getMeta();

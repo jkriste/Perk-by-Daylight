@@ -7,6 +7,9 @@ import javafx.concurrent.Task;
 
 import java.io.IOException;
 
+/**
+ * Used to clear/delete cached files.
+ */
 public class CacheDeletionTask extends Task<Long> {
 
     private static final Config CONFIG = PBD.getConfig();

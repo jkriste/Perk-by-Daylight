@@ -6,6 +6,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
+/**
+ * Used to represent all of the icons in the "Favors" category.
+ */
 public enum Offering implements Icon {
 
     BLOODY_PARTY_STREAMERS("bloodyPartyStreamers", "Bloody Party Streamers", "Anniversary"),

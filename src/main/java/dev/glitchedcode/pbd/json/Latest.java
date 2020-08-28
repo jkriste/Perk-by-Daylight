@@ -2,6 +2,15 @@ package dev.glitchedcode.pbd.json;
 
 import javax.annotation.Nonnull;
 
+/**
+ * Used to represent a latest.json file hosted on the
+ * glitchedcode.dev website, which is now retired.
+ *
+ * @deprecated Due to the lack of the audience
+ * needed for this kind of maintenance, I will
+ * be retiring this format for the foreseeable future.
+ */
+@Deprecated
 public class Latest {
 
     private String[] notes;

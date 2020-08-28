@@ -12,18 +12,23 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+/**
+ * Used to copy/move files from one directory to another.
+ */
 public class CopyTask extends Task<File> {
 
     private final File to;
     private final long max;
     private final File from;
+    private final boolean delete;
     private static final Logger logger = PBD.getLogger();
 
-    public CopyTask(@Nonnull File from, @Nonnull File to) {
+    public CopyTask(@Nonnull File from, @Nonnull File to, boolean delete) {
         if (!from.exists())
             throw new IllegalArgumentException("Given file/folder '" + from.getName() + "' does not exist.");
         this.from = from;
         this.to = to;
+        this.delete = delete;
         this.max = Files.getFileCount(from);
     }
 
@@ -38,11 +43,35 @@ public class CopyTask extends Task<File> {
             copy(from, toFile);
             return toFile;
         }
+        File[] files = from.listFiles();
+        if (files == null) {
+            logger.warn("#listFiles() for dir '{}' returned null, returning null.", from.getName());
+            return null;
+        }
         int copied = copyDirectory(from, to, 0);
-        logger.info("Copied {} file(s) from '{}' to '{}'.", copied, from.getAbsolutePath(), to.getAbsolutePath());
+        if (delete) {
+            logger.debug("Cleaning up...deleting copied files.");
+            for (File f : files) {
+                if (f.isDirectory())
+                    deleteAll(f);
+                else
+                    java.nio.file.Files.delete(f.toPath());
+            }
+            java.nio.file.Files.delete(from.toPath());
+        }
+        logger.info("{} {} file(s) from '{}' to '{}'.", (delete ? "Moved" : "Copied"), copied, from.getAbsolutePath(), to.getAbsolutePath());
         return to;
     }
 
+    /**
+     * Copys one directory to the inside of the other.
+     *
+     * @param dir1 The directory to be copied.
+     * @param dir2 The directory to put the copied directory inside of.
+     * @param current The current file count.
+     * @return The new directory, essentially dir1 inside of dir2.
+     * @throws IOException Thrown for various reasons.
+     */
     @ParametersAreNonnullByDefault
     public int copyDirectory(File dir1, File dir2, int current) throws IOException {
         if (!dir1.exists())
@@ -92,5 +121,30 @@ public class CopyTask extends Task<File> {
             logger.warn("Failed to copy '{}': {}", from.getAbsolutePath(), e.getMessage());
             logger.handleError(Thread.currentThread(), e);
         }
+    }
+
+    /**
+     * Deletes all files in the given dir.
+     * <br />
+     * Similar to {@link Files#deleteAll(File, boolean)} but kind of not.
+     *
+     * @param dir The directory to delete.
+     * @throws IOException Thrown if any files could not be deleted.
+     */
+    private void deleteAll(@Nonnull File dir) throws IOException {
+        if (!dir.isDirectory())
+            throw new IllegalArgumentException("Given file '" + dir.getName() + "' is not a directory.");
+        File[] files = dir.listFiles();
+        if (files == null) {
+            logger.warn("#listFiles() for dir '{}' returned null.", dir.getName());
+            return;
+        }
+        for (File file : files) {
+            if (file.isDirectory())
+                deleteAll(file);
+            else
+                java.nio.file.Files.delete(file.toPath());
+        }
+        java.nio.file.Files.delete(dir.toPath());
     }
 }

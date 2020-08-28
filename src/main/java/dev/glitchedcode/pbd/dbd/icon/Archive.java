@@ -9,6 +9,9 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import static dev.glitchedcode.pbd.dbd.Killer.*;
 import static dev.glitchedcode.pbd.dbd.Survivor.*;
 
+/**
+ * Used to represent all of the icons in the "Archive" category.
+ */
 public enum Archive implements Icon {
 
     KILLER("killer", "Killer"),

@@ -119,12 +119,13 @@ public class PBD extends Application {
     /**
      * The current version of this program.
      */
-    public static final Latest.Version VERSION = new Latest.Version(0, 2, 1);
+    public static final Latest.Version VERSION = new Latest.Version(0, 2, 0);
     /**
      * Used to schedule async tasks.
      */
     private static final ScheduledExecutorService SERVICE = Executors.newScheduledThreadPool(1);
 
+    // initialize crucial files and directories
     static {
         APP_DATA_DIR = new File(System.getenv("APPDATA"));
         PROGRAM_FILES_86_DIR = new File(System.getenv("ProgramFiles(X86)"));
@@ -135,6 +136,10 @@ public class PBD extends Application {
         LOGS_DIR = new File(PBD_DIR, "logs");
         ERROR_LOGS_DIR = new File(PBD_DIR, "error logs");
         CONFIG_FILE = new File(PBD_DIR, "config.json");
+    }
+
+    // initialize icons
+    static {
         ICONS_SORTED = new EnumMap<>(IconCategory.class);
         ICONS_SORTED.put(IconCategory.ACTION, asList(Action.values()));
         ICONS_SORTED.put(IconCategory.ADDON, asList(Addon.values()));
@@ -163,7 +168,7 @@ public class PBD extends Application {
         if (!PBD_DIR.exists()) {
             if (!PBD_DIR.mkdirs()) {
                 System.err.println("Failed to create directory: " + PBD_DIR.getAbsolutePath());
-                System.err.println("Please consult the developer here: https://github.com/glitchedcoder");
+                System.err.println("Please create an issue here: https://github.com/glitchedcoder/Perk-by-Daylight");
             }
         }
         // Builds our Gson object used to read & write to/from JSON files.
@@ -396,14 +401,35 @@ public class PBD extends Application {
         }
     }
 
+    /**
+     * Gets a {@link Collection} of all existing, registered icons.
+     * <br />
+     * This {@link Collection} is immutable.
+     *
+     * @return A {@link Collection} of all existing, registered icons.
+     */
     public static Collection<Icon> getIcons() {
         return Collections.unmodifiableCollection(ICONS);
     }
 
+    /**
+     * Gets a {@link Map} of all icons, sorted by {@link IconCategory}.
+     * <br />
+     * This {@link Map} is immutable.
+     *
+     * @return A {@link Map} of all icons, sorted by {@link IconCategory}.
+     */
     public static Map<IconCategory, List<Icon>> getIconsSorted() {
         return Collections.unmodifiableMap(ICONS_SORTED);
     }
 
+    /**
+     * Gets an {@link Icon} from the given name. The name should be non-proper.
+     *
+     * @param name The name of the icon.
+     * @return An {@link Icon} from the given name.
+     * @see #getIconProper(String)
+     */
     @Nullable
     public static Icon getIcon(@Nonnull String name) {
         for (Icon icon : getIcons()) {
@@ -414,6 +440,13 @@ public class PBD extends Application {
         return null;
     }
 
+    /**
+     * Gets an {@link Icon} from the given proper name.
+     *
+     * @param properName The proper name of the icon.
+     * @return An {@link Icon} from the given proper name.
+     * @see #getIcon(String)
+     */
     @Nullable
     public static Icon getIconProper(@Nonnull String properName) {
         LOGGER.debug("Getting icon with proper name '{}'", properName);
@@ -440,7 +473,7 @@ public class PBD extends Application {
      * Note: the returned {@link Set} is immutable.
      *
      * @param array The array to turn into a set.
-     * @param <T> Sub-class of {@link Icon}.
+     * @param <T>   Sub-class of {@link Icon}.
      * @return A {@link Set}.
      */
     @Nonnull
@@ -470,20 +503,30 @@ public class PBD extends Application {
                     return config;
                 }
             } catch (IOException e) {
-                System.out.println("Failed to create/save config file: " + e.getMessage());
+                System.err.println("Failed to create/save config file: " + e.getMessage());
                 e.printStackTrace();
             }
         } else {
             try (BufferedReader reader = new BufferedReader(new FileReader(CONFIG_FILE))) {
                 return GSON.fromJson(reader, Config.class);
             } catch (IOException e) {
-                System.out.println("Failed to read from config file: " + e.getMessage());
+                System.err.println("Failed to read from config file: " + e.getMessage());
                 e.printStackTrace();
             }
         }
         return null;
     }
 
+    /**
+     * Handles multiple things:
+     * <ul>
+     *     <li>Makes sure the Roaming appdata folder exists.</li>
+     *     <li>Initializes and caches all valid icon packs in the 'packs' folder.</li>
+     *     <li>Deletes any files or folders that do not represent an icon pack in the 'packs' folder.</li>
+     *     <li>Makes sure the 'temp', 'logs', 'error logs', and 'packs' folders exist/is created.</li>
+     *     <li>Calls {@link #getDbdDir()} and {@link #saveConfig()}</li>
+     * </ul>
+     */
     private static void setupFiles() {
         // Make sure local %appdata% folder exists.
         LOGGER.debug("%appdata% directory path: {}", APP_DATA_DIR.getAbsolutePath());
@@ -502,7 +545,7 @@ public class PBD extends Application {
             for (File file : files) {
                 if (IconPack.of(file) == null) {
                     LOGGER.warn("File/directory '{}' could not be determined" +
-                            " as an icon pack, deleting...", file.getName());
+                            " to be an icon pack, deleting...", file.getName());
                     try {
                         Files.deleteAll(file, true);
                     } catch (IOException e) {

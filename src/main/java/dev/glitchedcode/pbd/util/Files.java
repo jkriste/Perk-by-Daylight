@@ -95,6 +95,18 @@ public final class Files {
         return to;
     }
 
+    /**
+     * Gets the file count for the given file.
+     * <br />
+     * Will warn if either:
+     * <ul>
+     *     <li>The given file does not exist.</li>
+     *     <li>The file is a directory, but {@link File#listFiles()} returns null.</li>
+     * </ul>
+     *
+     * @param file The file to get the count for.
+     * @return The file count for the given file.
+     */
     public static long getFileCount(@Nonnull File file) {
         if (!file.exists()) {
             logger.warn("#getFileCount() for non-existent file '{}', returning 0.", file.getAbsolutePath());
@@ -154,6 +166,14 @@ public final class Files {
         return dir2;
     }
 
+    /**
+     * Moves the given file 'from' to the given directory, 'directory'.
+     *
+     * @param from The file to move.
+     * @param directory The directory to move to.
+     * @return The moved file.
+     * @throws IOException Thrown from {@link #copy(File, File)} or the file could not be deleted.
+     */
     @ParametersAreNonnullByDefault
     public static File moveToDirectory(File from, File directory) throws IOException {
         File file = copy(from, directory);
@@ -161,6 +181,14 @@ public final class Files {
         return file;
     }
 
+    /**
+     * Moves the given directory inside the second given directory.
+     *
+     * @param dir1 The directory to be moved.
+     * @param dir2 The directory to be moved inside of.
+     * @return The moved directory.
+     * @throws IOException Thrown from {@link #copyDirectory(File, File)} and {@link #deleteAll(File, boolean)}.
+     */
     @ParametersAreNonnullByDefault
     public static File moveDirectory(File dir1, File dir2) throws IOException {
         File file = copyDirectory(dir1, dir2);
