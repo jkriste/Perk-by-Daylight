@@ -58,13 +58,14 @@ There have been no reports of users getting banned for modifying or replacing in
 * A UI-implementation of preferences.
 * Logs being created and stored individually once per run, in its own `logs` folder.
 * A built-in dialog box for those who want to donate.
+* Heavily documented code.
 
 *Plan to be Added*
 * The ability to create an empty icon pack and add icons to it.
 * The ability to take an existing icon pack and ZIP it to a specific folder.
 * Edit/update already existing icon packs.
 * Get detailed information of the selected icon pack.
-* Lots of documentation that needs to be added.
+
 * Updating an old icon with a new icon.
 
 *Might\* be Added*

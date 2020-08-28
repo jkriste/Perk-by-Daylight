@@ -119,7 +119,7 @@ public class PBD extends Application {
     /**
      * The current version of this program.
      */
-    public static final Latest.Version VERSION = new Latest.Version(0, 2, 0);
+    public static final Latest.Version VERSION = new Latest.Version(0, 2, 2);
     /**
      * Used to schedule async tasks.
      */
